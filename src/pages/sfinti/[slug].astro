@@ -1,0 +1,180 @@
+---
+import { getEmDashEntry, getEmDashCollection, getSeoMeta, decodeSlug } from "emdash";
+import { PortableText } from "emdash/ui";
+import Base from "../../layouts/Base.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import PrayerCard from "../../components/PrayerCard.astro";
+import ShareButtons from "../../components/ShareButtons.astro";
+import AdSense from "../../components/AdSense.astro";
+
+const slug = decodeSlug(Astro.params.slug);
+if (!slug) return Astro.redirect("/404");
+
+const { entry: saint, cacheHint } = await getEmDashEntry("sfinti", slug);
+if (!saint) return Astro.redirect("/404");
+
+Astro.cache.set(cacheHint);
+
+const siteUrl = "https://rugaciunisanatate.ro";
+const pageUrl = `${siteUrl}/sfinti/${slug}`;
+
+const seo = getSeoMeta(saint, { siteTitle: "Rugăciuni Sănătate", siteUrl, path: `/sfinti/${slug}` });
+
+// Get prayers related to this saint
+const { entries: saintPrayers } = await getEmDashCollection("rugaciuni", {
+  where: { status: "published", saint_slug: slug },
+  orderBy: { published_at: "asc" },
+  limit: 12,
+});
+
+const schema = [
+  {
+    "@type": "Person",
+    "@id": `${pageUrl}#saint`,
+    name: saint.data.name,
+    description: seo.description,
+    url: pageUrl,
+    ...(saint.data.feast_date && {
+      birthDate: saint.data.feast_date,
+    }),
+    additionalType: "https://schema.org/Person",
+  },
+  {
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Acasă", item: siteUrl },
+      { "@type": "ListItem", position: 2, name: "Sfinți", item: `${siteUrl}/sfinti` },
+      { "@type": "ListItem", position: 3, name: saint.data.name, item: pageUrl },
+    ],
+  },
+];
+
+const todayFeasting = saint.data.feast_date
+  ? (() => {
+      const today = new Date();
+      const [d, m] = (saint.data.feast_date as string).split(" ");
+      return today.getDate() === parseInt(d);
+    })()
+  : false;
+---
+
+<Base
+  title={`${saint.data.name} — Rugăciuni și Acatist`}
+  description={seo.description}
+  canonical={pageUrl}
+  schema={schema}
+  activeNav="sfinti"
+>
+  <!-- SAINT HERO -->
+  <div class="saint-hero">
+    <div class="saint-hero-inner">
+      <div class="saint-icon-frame">
+        {saint.data.icon ?? "✝️"}
+      </div>
+      <div class="saint-hero-info">
+        {saint.data.saint_type && (
+          <div class="saint-type-badge">✦ {saint.data.saint_type}</div>
+        )}
+        <h1 class="saint-hero-name">{saint.data.name}</h1>
+        {saint.data.subtitle && (
+          <p class="saint-hero-subtitle">{saint.data.subtitle}</p>
+        )}
+        <div class="saint-meta-row">
+          {saint.data.feast_date && (
+            <div class="saint-meta-item">
+              <span class="saint-meta-label">Prăznuit</span>
+              <span class="saint-meta-val">{saint.data.feast_date}</span>
+            </div>
+          )}
+          {saint.data.life_dates && (
+            <div class="saint-meta-item">
+              <span class="saint-meta-label">Viața</span>
+              <span class="saint-meta-val">{saint.data.life_dates}</span>
+            </div>
+          )}
+          {saint.data.patron_of && (
+            <div class="saint-meta-item">
+              <span class="saint-meta-label">Patron</span>
+              <span class="saint-meta-val">{saint.data.patron_of}</span>
+            </div>
+          )}
+        </div>
+        <div class="saint-hero-actions">
+          {saintPrayers.length > 0 && (
+            <a href="#rugaciuni" class="btn-primary">Rugăciuni →</a>
+          )}
+          <a href="/sfinti" class="btn-ghost">Toți sfinții</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {todayFeasting && saint.data.feast_date && (
+    <div class="feast-strip">
+      <div class="feast-strip-inner">
+        <span class="feast-strip-date">{saint.data.feast_date}</span>
+        <span class="feast-strip-sep">·</span>
+        <span class="feast-strip-info">Astăzi este ziua de prăznuire a {saint.data.name}</span>
+      </div>
+    </div>
+  )}
+
+  <Breadcrumb
+    crumbs={[
+      { label: "Sfinți", href: "/sfinti" },
+      { label: saint.data.name },
+    ]}
+  />
+
+  <div class="page-body">
+    <main>
+      {saint.data.description && (
+        <div style="margin-bottom:40px">
+          <div class="section-label">✦ Viața sfântului</div>
+          <div style="font-size:1rem;line-height:1.85;color:var(--text)">
+            <PortableText value={saint.data.description} />
+          </div>
+        </div>
+      )}
+
+      {saintPrayers.length > 0 && (
+        <div id="rugaciuni">
+          <div class="section-label" style="margin-bottom:16px">✦ Rugăciuni și acatiste</div>
+          <div class="prayers-grid">
+            {saintPrayers.map((p) => (
+              <PrayerCard
+                title={p.data.title}
+                slug={p.data.slug ?? p.id}
+                excerpt={p.data.excerpt}
+                category={p.data.category}
+                readingTime={p.data.reading_time}
+                hasAudio={!!p.data.audio_url}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      <ShareButtons url={pageUrl} title={saint.data.name} />
+    </main>
+
+    <aside>
+      <AdSense slot="6789012345" format="rectangle" class="ad-banner rect" />
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">✦ Alți sfinți</div>
+        <ul class="sidebar-list">
+          {[
+            ["sfantul-pantelimon", "Sf. Pantelimon"],
+            ["sfantul-nectarie", "Sf. Nectarie"],
+            ["sfantul-luca-al-crimeei", "Sf. Luca al Crimeei"],
+            ["sfantul-mina", "Sf. Mina"],
+            ["cosma-si-damian", "Sf. Cosma și Damian"],
+            ["sfanta-parascheva", "Sf. Parascheva"],
+          ].filter(([s]) => s !== slug).map(([s, label]) => (
+            <li><a href={`/sfinti/${s}`}>{label}</a></li>
+          ))}
+        </ul>
+      </div>
+    </aside>
+  </div>
+</Base>

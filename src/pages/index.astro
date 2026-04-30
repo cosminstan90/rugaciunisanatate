@@ -1,0 +1,214 @@
+---
+import { getEmDashCollection, getSiteSettings } from "emdash";
+import Base from "../layouts/Base.astro";
+import PrayerCard from "../components/PrayerCard.astro";
+import ArticleCard from "../components/ArticleCard.astro";
+import AdSense from "../components/AdSense.astro";
+import { getZiCalendar, getSfintiiZilei } from "../data/calendar-ortodox";
+
+const today = new Date();
+const ziCalendar = getZiCalendar(today);
+const sfintiiZilei = getSfintiiZilei(today);
+
+const [{ entries: latestPrayers }, { entries: featuredArticles }] = await Promise.all([
+  getEmDashCollection("rugaciuni", {
+    orderBy: { published_at: "desc" },
+    limit: 6,
+    where: { status: "published" },
+  }),
+  getEmDashCollection("articole", {
+    orderBy: { published_at: "desc" },
+    limit: 3,
+    where: { status: "published" },
+  }),
+]);
+
+const categories = [
+  { slug: "vindecare", name: "Rugăciuni de vindecare", icon: "🕊", desc: "Pentru sănătatea trupului și a sufletului, pentru cei bolnavi și suferinzi." },
+  { slug: "dimineata", name: "Rugăciuni de dimineață", icon: "☀️", desc: "Începe ziua cu rugăciunea — curăță gândul și aduce pace în inimă." },
+  { slug: "seara", name: "Rugăciuni de seară", icon: "🌙", desc: "Închei ziua în pace și mulțumire, încredințând noaptea lui Dumnezeu." },
+  { slug: "psalmi", name: "Psalmi", icon: "📖", desc: "Cele 150 de psalmi ale lui David — izvor nesecat de mângâiere și putere." },
+  { slug: "familie", name: "Rugăciuni pentru familie", icon: "🏠", desc: "Pentru soț, soție, copii, părinți — protecție și binecuvântare." },
+  { slug: "ocazii", name: "Ocazii speciale", icon: "✨", desc: "Înainte de operație, la examene, la drum, la necaz — rugăciunea potrivită." },
+];
+
+const todayFormatted = today.toLocaleDateString("ro-RO", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+
+const schema = [
+  {
+    "@type": "WebPage",
+    "@id": "https://rugaciunisanatate.ro/#webpage",
+    url: "https://rugaciunisanatate.ro/",
+    name: "Rugăciuni Sănătate — Hrană pentru suflet",
+    isPartOf: { "@id": "https://rugaciunisanatate.ro/#website" },
+    about: { "@id": "https://rugaciunisanatate.ro/#organization" },
+    description: "Colecție completă de rugăciuni ortodoxe pentru sănătate, vindecare și familie.",
+    inLanguage: "ro-RO",
+  },
+];
+---
+
+<Base
+  title="Rugăciuni Sănătate — Hrană pentru suflet"
+  description="Colecție completă de rugăciuni ortodoxe pentru sănătate, vindecare trupească și sufletească, acatiste și psalmi."
+  canonical="https://rugaciunisanatate.ro/"
+  schema={schema}
+  activeNav="acasa"
+>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">✦ Rugăciuni pentru suflet și trup ✦</div>
+      <h1 class="hero-title">
+        Rugăciuni ortodoxe<br /><em>pentru sănătate</em>
+      </h1>
+      <p class="hero-subtitle">
+        Colecție completă de rugăciuni, acatiste și psalmi pentru vindecare trupească,
+        pace sufletească și ocrotire dumnezeiască.
+      </p>
+      <div class="hero-search">
+        <input
+          type="search"
+          placeholder="Caută o rugăciune..."
+          aria-label="Caută rugăciuni"
+          onkeydown="if(event.key==='Enter')window.location='/rugaciuni?q='+encodeURIComponent(this.value)"
+        />
+        <button onclick="window.location='/rugaciuni?q='+encodeURIComponent(this.previousElementSibling.value)">
+          Caută
+        </button>
+      </div>
+      <div class="hero-tags">
+        {categories.map((c) => (
+          <a href={`/rugaciuni?cat=${c.slug}`} class="hero-tag">{c.name.replace("Rugăciuni de ", "").replace("Rugăciuni pentru ", "")}</a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- RUGACIUNEA ZILEI -->
+  <section class="section-inner" style="background:var(--parchment-dark); border-bottom:1px solid rgba(196,151,58,0.15)">
+    <div class="section-header" style="text-align:center;margin-bottom:32px">
+      <div class="section-label">✦ {todayFormatted} ✦</div>
+      <h2 class="section-title">Sfântul <em>zilei de astăzi</em></h2>
+    </div>
+    {ziCalendar && (
+      <div style="max-width:680px;margin:0 auto;text-align:center">
+        <div style="font-size:2.5rem;margin-bottom:16px">{ziCalendar.icona ?? "✝️"}</div>
+        <p style="font-family:var(--font-display);font-size:1.4rem;font-weight:600;color:var(--dark);margin-bottom:12px">
+          {ziCalendar.sfinti[0]}
+        </p>
+        {ziCalendar.sfinti.length > 1 && (
+          <p style="font-size:0.88rem;color:var(--text-light);margin-bottom:20px">
+            Și: {ziCalendar.sfinti.slice(1).join(" · ")}
+          </p>
+        )}
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          {ziCalendar.post && (
+            <span style="font-size:0.8rem;background:rgba(139,26,42,0.08);border:1px solid rgba(139,26,42,0.2);color:var(--crimson);border-radius:20px;padding:4px 14px">
+              🍃 Zi de post
+            </span>
+          )}
+          {ziCalendar.dezlegare && (
+            <span style="font-size:0.8rem;background:rgba(196,151,58,0.08);border:1px solid rgba(196,151,58,0.25);color:var(--gold);border-radius:20px;padding:4px 14px">
+              ✦ Dezlegare la {ziCalendar.dezlegare}
+            </span>
+          )}
+        </div>
+        <div style="margin-top:24px">
+          <a href="/calendar" class="btn-outline">
+            📅 Calendar Ortodox Complet
+          </a>
+        </div>
+      </div>
+    )}
+  </section>
+
+  <!-- CATEGORII -->
+  <section class="section-inner">
+    <div class="section-header" style="text-align:center">
+      <div class="section-label">✦ Explorează ✦</div>
+      <h2 class="section-title">Rugăciuni după <em>categorie</em></h2>
+    </div>
+    <div class="categories-grid">
+      {categories.map((cat) => (
+        <a href={`/rugaciuni?cat=${cat.slug}`} class="cat-card">
+          <div class="cat-icon">{cat.icon}</div>
+          <div class="cat-name">{cat.name}</div>
+          <div class="cat-desc">{cat.desc}</div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- AD STRIP -->
+  <div class="ad-strip">
+    <AdSense slot="1234567890" format="horizontal" />
+  </div>
+
+  <!-- RUGACIUNI RECENTE -->
+  {latestPrayers.length > 0 && (
+    <section class="section-inner">
+      <div class="section-header" style="display:flex;align-items:flex-end;justify-content:space-between">
+        <div>
+          <div class="section-label">✦ Adăugate recent ✦</div>
+          <h2 class="section-title">Rugăciuni <em>noi</em></h2>
+        </div>
+        <a href="/rugaciuni" style="font-family:var(--font-display);font-size:0.9rem;color:var(--crimson);text-decoration:none">
+          Vezi toate →
+        </a>
+      </div>
+      <div class="prayers-grid">
+        {latestPrayers.map((p) => (
+          <PrayerCard
+            title={p.data.title}
+            slug={p.data.slug ?? p.id}
+            excerpt={p.data.excerpt}
+            category={p.data.category}
+            readingTime={p.data.reading_time}
+            hasAudio={!!p.data.audio_url}
+            publishedAt={p.data.published_at}
+          />
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- ARTICOLE -->
+  {featuredArticles.length > 0 && (
+    <section class="section-inner" style="background:var(--parchment-dark);border-top:1px solid rgba(196,151,58,0.15);border-bottom:1px solid rgba(196,151,58,0.15)">
+      <div class="section-header" style="display:flex;align-items:flex-end;justify-content:space-between">
+        <div>
+          <div class="section-label">✦ Din arhivă ✦</div>
+          <h2 class="section-title">Articole <em>spirituale</em></h2>
+        </div>
+        <a href="/articole" style="font-family:var(--font-display);font-size:0.9rem;color:var(--crimson);text-decoration:none">
+          Toate articolele →
+        </a>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px">
+        {featuredArticles.map((a) => (
+          <ArticleCard
+            title={a.data.title}
+            slug={a.data.slug ?? a.id}
+            excerpt={a.data.excerpt}
+            category={a.data.category}
+            readingTime={a.data.reading_time}
+            publishedAt={a.data.published_at}
+          />
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- ABOUT SNIPPET -->
+  <section class="section-inner" style="text-align:center;max-width:680px;margin-left:auto;margin-right:auto">
+    <div class="ornament" style="margin-bottom:24px">Despre noi</div>
+    <h2 class="section-title" style="margin-bottom:16px">Hrană pentru <em>suflet</em></h2>
+    <p style="font-size:1rem;line-height:1.8;color:var(--text-light);margin-bottom:24px">
+      Rugăciunisanatate.ro este o colecție vie de rugăciuni ortodoxe, adunată cu dragoste pentru
+      toți cei care caută vindecare, pace și apropierea de Dumnezeu.
+    </p>
+    <a href="/despre" class="btn-outline">Citește mai mult</a>
+  </section>
+</Base>

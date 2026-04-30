@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" width="320" height="80">
+  <defs>
+    
+  </defs>
+
+  
+  <circle cx="40" cy="40" r="34" fill="#1A0D07" stroke="#C4973A" stroke-width="1.5" opacity="0.9"></circle>
+  <circle cx="40" cy="40" r="34" fill="none" stroke="#C4973A" stroke-width="1" opacity="0.3"></circle>
+
+  
+  <rect x="37.5" y="12" width="5" height="56" rx="1" fill="#C4973A"></rect>
+  <rect x="22" y="26" width="36" height="5" rx="1" fill="#C4973A"></rect>
+  
+  <rect x="26" y="46" width="28" height="4" rx="1" fill="#C4973A" opacity="0.65" transform="rotate(-12 40 48)"></rect>
+
+  
+  <circle cx="40" cy="17" r="5" fill="#C4973A" opacity="0.25"></circle>
+  <circle cx="40" cy="17" r="2.5" fill="#D4A84A" opacity="0.55"></circle>
+
+  
+  <text x="88" y="36" font-family="&#39;Cormorant Garamond&#39;, Georgia, serif" font-size="22" font-weight="600" fill="#1A0D07" letter-spacing="0.5">Rugăciuni Sănătate</text>
+  <text x="89" y="56" font-family="&#39;Lora&#39;, Georgia, serif" font-size="9.5" fill="#C4973A" letter-spacing="3">HRANĂ PENTRU SUFLET</text>
+
+  
+  <line x1="89" y1="61" x2="295" y2="61" stroke="#C4973A" stroke-width="0.6" opacity="0.35"></line>
+</svg>

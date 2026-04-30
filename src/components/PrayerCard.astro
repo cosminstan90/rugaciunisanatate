@@ -1,0 +1,27 @@
+---
+interface Props {
+  title: string;
+  slug: string;
+  excerpt?: string;
+  category?: string;
+  readingTime?: number;
+  hasAudio?: boolean;
+  publishedAt?: string;
+}
+const { title, slug, excerpt, category, readingTime, hasAudio, publishedAt } = Astro.props;
+---
+
+<a href={`/${slug}`} class:list={["prayer-card", hasAudio && "has-audio"]}>
+  {category && <div class="prayer-card-tag">{category}</div>}
+  <div class="prayer-card-title">{title}</div>
+  {excerpt && <div class="prayer-card-excerpt">{excerpt}</div>}
+  <div class="prayer-card-meta">
+    {readingTime && <span>{readingTime} min citire</span>}
+    {readingTime && publishedAt && <span class="dot">·</span>}
+    {publishedAt && (
+      <span>
+        {new Date(publishedAt).toLocaleDateString("ro-RO", { day: "numeric", month: "long", year: "numeric" })}
+      </span>
+    )}
+  </div>
+</a>

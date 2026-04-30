@@ -1,0 +1,40 @@
+---
+interface Props {
+  url: string;
+  title: string;
+}
+const { url, title } = Astro.props;
+const encoded = encodeURIComponent(url);
+const encodedTitle = encodeURIComponent(title);
+---
+
+<div class="share-section">
+  <div class="share-label">Distribuie această rugăciune</div>
+  <div class="share-buttons">
+    <a
+      href={`https://www.facebook.com/sharer/sharer.php?u=${encoded}`}
+      class="share-btn fb"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Distribuie pe Facebook"
+    >
+      📘 Facebook
+    </a>
+    <a
+      href={`https://wa.me/?text=${encodedTitle}%20${encoded}`}
+      class="share-btn wa"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Distribuie pe WhatsApp"
+    >
+      💬 WhatsApp
+    </a>
+    <button
+      class="share-btn copy"
+      onclick={`navigator.clipboard.writeText('${url}').then(()=>{this.textContent='✓ Copiat!';setTimeout(()=>{this.textContent='🔗 Copiază link'},2000)})`}
+      aria-label="Copiază link"
+    >
+      🔗 Copiază link
+    </button>
+  </div>
+</div>

@@ -1,0 +1,32 @@
+---
+/**
+ * AdSense component.
+ * Publisher ID is read from PUBLIC_ADSENSE_CLIENT env var (set in .env on VPS).
+ * Ad slot IDs are passed as props per placement.
+ */
+interface Props {
+  slot: string;
+  format?: "auto" | "rectangle" | "horizontal" | "vertical";
+  class?: string;
+}
+
+const { slot, format = "auto", class: className } = Astro.props;
+const client = import.meta.env.PUBLIC_ADSENSE_CLIENT;
+const isPlaceholder = !client || client.startsWith("ca-pub-XXXX");
+---
+
+{isPlaceholder ? (
+  <div class:list={["ad-banner leaderboard", className]} aria-hidden="true">
+    Publicitate
+  </div>
+) : (
+  <ins
+    class:list={["adsbygoogle", className]}
+    style="display:block"
+    data-ad-client={client}
+    data-ad-slot={slot}
+    data-ad-format={format}
+    data-full-width-responsive="true"
+  ></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+)}

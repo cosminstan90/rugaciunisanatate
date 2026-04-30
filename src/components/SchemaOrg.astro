@@ -1,0 +1,46 @@
+---
+interface Props {
+  schema: object | object[];
+}
+
+const { schema } = Astro.props;
+
+const siteOrganization = {
+  "@type": "Organization",
+  "@id": "https://rugaciunisanatate.ro/#organization",
+  name: "Rugăciuni Sănătate",
+  url: "https://rugaciunisanatate.ro",
+  logo: {
+    "@type": "ImageObject",
+    url: "https://rugaciunisanatate.ro/logo.svg",
+  },
+  sameAs: [],
+};
+
+const webSite = {
+  "@type": "WebSite",
+  "@id": "https://rugaciunisanatate.ro/#website",
+  url: "https://rugaciunisanatate.ro",
+  name: "Rugăciuni Sănătate",
+  description: "Rugăciuni ortodoxe pentru sănătate, vindecare și familie",
+  inLanguage: "ro-RO",
+  publisher: { "@id": "https://rugaciunisanatate.ro/#organization" },
+  potentialAction: {
+    "@type": "SearchAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: "https://rugaciunisanatate.ro/rugaciuni?q={search_term_string}",
+    },
+    "query-input": "required name=search_term_string",
+  },
+};
+
+const schemas = Array.isArray(schema) ? schema : [schema];
+
+const graph = {
+  "@context": "https://schema.org",
+  "@graph": [siteOrganization, webSite, ...schemas],
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(graph)} />

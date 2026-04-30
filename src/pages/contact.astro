@@ -1,0 +1,111 @@
+---
+import Base from "../layouts/Base.astro";
+import Breadcrumb from "../components/Breadcrumb.astro";
+
+const siteUrl = "https://rugaciunisanatate.ro";
+const schema = [
+  {
+    "@type": "ContactPage",
+    "@id": `${siteUrl}/contact#page`,
+    url: `${siteUrl}/contact`,
+    name: "Contact — Rugăciuni Sănătate",
+    inLanguage: "ro-RO",
+    isPartOf: { "@id": `${siteUrl}/#website` },
+  },
+  {
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Acasă", item: siteUrl },
+      { "@type": "ListItem", position: 2, name: "Contact", item: `${siteUrl}/contact` },
+    ],
+  },
+];
+---
+
+<Base
+  title="Contact — Rugăciuni Sănătate"
+  description="Contactează echipa Rugăciuni Sănătate pentru întrebări, sugestii sau colaborări."
+  canonical={`${siteUrl}/contact`}
+  schema={schema}
+>
+  <Breadcrumb crumbs={[{ label: "Contact" }]} />
+
+  <div class="static-page">
+    <div class="ornament" style="margin-bottom:24px">Contact</div>
+    <h1>Ia legătura cu noi</h1>
+    <p>
+      Ne bucurăm să auzim de la voi — fie că aveți o sugestie de rugăciune, o corecție
+      sau doriți să colaborați. Răspundem în cel mult 48 de ore.
+    </p>
+
+    <form
+      class="contact-form"
+      action="/_emdash/api/contact"
+      method="post"
+      onsubmit="handleSubmit(event)"
+    >
+      <div class="form-group">
+        <label for="name">Numele dvs. *</label>
+        <input type="text" id="name" name="name" required placeholder="Ion Popescu" />
+      </div>
+      <div class="form-group">
+        <label for="email">Adresa de email *</label>
+        <input type="email" id="email" name="email" required placeholder="ion@example.ro" />
+      </div>
+      <div class="form-group">
+        <label for="subject">Subiect *</label>
+        <select id="subject" name="subject" required>
+          <option value="">Alege un subiect</option>
+          <option value="sugestie">Sugestie rugăciune</option>
+          <option value="corectie">Corecție / eroare</option>
+          <option value="colaborare">Colaborare</option>
+          <option value="altele">Altele</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="message">Mesaj *</label>
+        <textarea id="message" name="message" required placeholder="Mesajul dvs..."></textarea>
+      </div>
+      <button type="submit" class="btn-primary" id="submitBtn">
+        Trimite mesajul
+      </button>
+      <div id="formMsg" style="display:none;padding:12px 16px;border-radius:var(--radius);font-size:0.9rem"></div>
+    </form>
+  </div>
+</Base>
+
+<script>
+  async function handleSubmit(e: SubmitEvent) {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const btn = document.getElementById("submitBtn") as HTMLButtonElement;
+    const msg = document.getElementById("formMsg")!;
+    btn.disabled = true;
+    btn.textContent = "Se trimite...";
+    try {
+      const res = await fetch(form.action, {
+        method: "POST",
+        body: new FormData(form),
+      });
+      if (res.ok) {
+        msg.style.display = "block";
+        msg.style.background = "rgba(34,197,94,0.1)";
+        msg.style.border = "1px solid rgba(34,197,94,0.3)";
+        msg.style.color = "#15803d";
+        msg.textContent = "✓ Mesajul a fost trimis. Vă mulțumim!";
+        form.reset();
+      } else {
+        throw new Error();
+      }
+    } catch {
+      msg.style.display = "block";
+      msg.style.background = "rgba(239,68,68,0.1)";
+      msg.style.border = "1px solid rgba(239,68,68,0.3)";
+      msg.style.color = "#dc2626";
+      msg.textContent = "A apărut o eroare. Vă rugăm să încercați din nou.";
+      btn.disabled = false;
+      btn.textContent = "Trimite mesajul";
+    }
+  }
+  (window as any).handleSubmit = handleSubmit;
+</script>

@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Disallow: /_emdash/
+Disallow: /api/
+
+Sitemap: https://rugaciunisanatate.ro/sitemap.xml

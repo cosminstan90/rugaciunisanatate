@@ -1,0 +1,17 @@
+---
+interface Props {
+  name: string;
+  slug: string;
+  type?: string;
+  feastDate?: string;
+  icon?: string;
+}
+const { name, slug, type, feastDate, icon = "✝️" } = Astro.props;
+---
+
+<a href={`/sfinti/${slug}`} class="saint-card">
+  <div class="saint-card-icon">{icon}</div>
+  {type && <div class="saint-card-type">{type}</div>}
+  <div class="saint-card-name">{name}</div>
+  {feastDate && <div class="saint-card-feast">Praznuit: {feastDate}</div>}
+</a>

@@ -1,0 +1,126 @@
+---
+import { getEmDashEntry, getEmDashCollection, decodeSlug } from "emdash";
+import Base from "../../layouts/Base.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import PrayerCard from "../../components/PrayerCard.astro";
+import ArticleCard from "../../components/ArticleCard.astro";
+
+const slug = decodeSlug(Astro.params.slug);
+if (!slug) return Astro.redirect("/404");
+
+const { entry: author } = await getEmDashEntry("autori", slug);
+if (!author) return Astro.redirect("/404");
+
+const [{ entries: prayers }, { entries: articles }] = await Promise.all([
+  getEmDashCollection("rugaciuni", {
+    where: { status: "published", "bylines.slug": slug },
+    orderBy: { published_at: "desc" },
+    limit: 12,
+  }),
+  getEmDashCollection("articole", {
+    where: { status: "published", "bylines.slug": slug },
+    orderBy: { published_at: "desc" },
+    limit: 6,
+  }),
+]);
+
+const siteUrl = "https://rugaciunisanatate.ro";
+const pageUrl = `${siteUrl}/autori/${slug}`;
+const initials = (author.data.name as string)
+  .split(" ")
+  .map((w: string) => w[0])
+  .join("")
+  .slice(0, 2)
+  .toUpperCase();
+
+const schema = [
+  {
+    "@type": "Person",
+    "@id": `${pageUrl}#person`,
+    name: author.data.name,
+    description: author.data.bio,
+    url: pageUrl,
+    jobTitle: author.data.role,
+  },
+  {
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Acasă", item: siteUrl },
+      { "@type": "ListItem", position: 2, name: author.data.name, item: pageUrl },
+    ],
+  },
+];
+---
+
+<Base
+  title={`${author.data.name} — Autor Rugăciuni Sănătate`}
+  description={author.data.bio ?? `Rugăciuni și articole de ${author.data.name}`}
+  canonical={pageUrl}
+  schema={schema}
+>
+  <Breadcrumb crumbs={[{ label: author.data.name as string }]} />
+
+  <div class="section-inner" style="max-width:800px;margin:0 auto;text-align:center;padding-top:56px">
+    <div class="author-avatar-circle" style="width:80px;height:80px;margin:0 auto 20px;font-size:1.8rem">
+      <span class="author-initials">{initials}</span>
+      <div class="author-verified-badge" style="width:22px;height:22px;font-size:0.7rem">✓</div>
+    </div>
+    <h1 style="font-family:var(--font-display);font-size:2rem;font-weight:600;color:var(--dark);margin-bottom:8px">
+      {author.data.name}
+    </h1>
+    {author.data.role && (
+      <div style="font-size:0.9rem;color:var(--text-light);margin-bottom:16px">{author.data.role}</div>
+    )}
+    {author.data.bio && (
+      <p style="font-size:1rem;line-height:1.8;color:var(--text);max-width:560px;margin:0 auto">
+        {author.data.bio}
+      </p>
+    )}
+    <div style="display:flex;gap:20px;justify-content:center;margin-top:20px">
+      <div style="text-align:center">
+        <div style="font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--crimson)">{prayers.length}</div>
+        <div style="font-size:0.78rem;color:var(--text-light)">Rugăciuni</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--crimson)">{articles.length}</div>
+        <div style="font-size:0.78rem;color:var(--text-light)">Articole</div>
+      </div>
+    </div>
+  </div>
+
+  {prayers.length > 0 && (
+    <div class="section-inner">
+      <div class="section-label" style="margin-bottom:20px">✦ Rugăciuni</div>
+      <div class="prayers-grid">
+        {prayers.map((p) => (
+          <PrayerCard
+            title={p.data.title}
+            slug={p.data.slug ?? p.id}
+            excerpt={p.data.excerpt}
+            category={p.data.category}
+            readingTime={p.data.reading_time}
+            hasAudio={!!p.data.audio_url}
+          />
+        ))}
+      </div>
+    </div>
+  )}
+
+  {articles.length > 0 && (
+    <div class="section-inner" style="padding-top:0">
+      <div class="section-label" style="margin-bottom:20px">✦ Articole</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px">
+        {articles.map((a) => (
+          <ArticleCard
+            title={a.data.title}
+            slug={a.data.slug ?? a.id}
+            excerpt={a.data.excerpt}
+            category={a.data.category}
+            readingTime={a.data.reading_time}
+            publishedAt={a.data.published_at}
+          />
+        ))}
+      </div>
+    </div>
+  )}
+</Base>

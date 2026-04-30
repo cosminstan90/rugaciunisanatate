@@ -1,0 +1,71 @@
+---
+import { getEmDashCollection } from "emdash";
+import Base from "../../layouts/Base.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import SaintCard from "../../components/SaintCard.astro";
+
+const { entries: saints } = await getEmDashCollection("sfinti", {
+  orderBy: { name: "asc" },
+  where: { status: "published" },
+});
+
+const siteUrl = "https://rugaciunisanatate.ro";
+const schema = [
+  {
+    "@type": "CollectionPage",
+    "@id": `${siteUrl}/sfinti#page`,
+    url: `${siteUrl}/sfinti`,
+    name: "Sfinți cu darul vindecării — Rugăciuni Sănătate",
+    description: "Rugăciuni și acatiste către sfinții cu darul vindecării din tradiția ortodoxă.",
+    inLanguage: "ro-RO",
+  },
+  {
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Acasă", item: siteUrl },
+      { "@type": "ListItem", position: 2, name: "Sfinți", item: `${siteUrl}/sfinti` },
+    ],
+  },
+];
+---
+
+<Base
+  title="Sfinți cu darul vindecării — Rugăciuni și acatiste"
+  description="Rugăciuni și acatiste către sfinții ortodocși cu darul vindecării: Sf. Pantelimon, Sf. Nectarie, Sf. Luca al Crimeei și mulți alții."
+  canonical={`${siteUrl}/sfinti`}
+  schema={schema}
+  activeNav="sfinti"
+>
+  <div class="catalog-hero">
+    <div class="catalog-hero-inner">
+      <div class="catalog-hero-label">✦ Sfinți tămăduitori ✦</div>
+      <h1 class="catalog-hero-title">Sfinți cu <em>darul vindecării</em></h1>
+    </div>
+  </div>
+
+  <Breadcrumb crumbs={[{ label: "Sfinți" }]} />
+
+  <div class="section-inner">
+    {saints.length > 0 ? (
+      <div class="categories-grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">
+        {saints.map((s) => (
+          <SaintCard
+            name={s.data.name}
+            slug={s.data.slug ?? s.id}
+            type={s.data.saint_type}
+            feastDate={s.data.feast_date}
+            icon={s.data.icon ?? "✝️"}
+          />
+        ))}
+      </div>
+    ) : (
+      <div style="text-align:center;padding:80px 20px;color:var(--text-light)">
+        <div style="font-size:3rem;margin-bottom:16px">✝️</div>
+        <p>Paginile sfinților sunt în curs de adăugare.</p>
+        <a href="/rugaciuni?cat=vindecare" class="btn-primary" style="margin-top:20px;display:inline-flex">
+          Rugăciuni de vindecare
+        </a>
+      </div>
+    )}
+  </div>
+</Base>

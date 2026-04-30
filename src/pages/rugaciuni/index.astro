@@ -1,0 +1,191 @@
+---
+import { getEmDashCollection } from "emdash";
+import Base from "../../layouts/Base.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import PrayerCard from "../../components/PrayerCard.astro";
+import AdSense from "../../components/AdSense.astro";
+
+const url = Astro.url;
+const q = url.searchParams.get("q") ?? "";
+const cat = url.searchParams.get("cat") ?? "all";
+const tag = url.searchParams.get("tag") ?? "";
+const sort = url.searchParams.get("sort") ?? "recent";
+const page = parseInt(url.searchParams.get("page") ?? "1");
+const PER_PAGE = 24;
+
+const whereClause: Record<string, unknown> = { status: "published" };
+if (cat && cat !== "all") whereClause.category = cat;
+if (tag) whereClause["tags.slug"] = tag;
+
+const orderBy: Record<string, "asc" | "desc"> =
+  sort === "alpha" ? { title: "asc" } : { published_at: "desc" };
+
+const { entries: allPrayers } = await getEmDashCollection("rugaciuni", {
+  where: whereClause,
+  orderBy,
+});
+
+const filtered = q
+  ? allPrayers.filter((p) =>
+      p.data.title.toLowerCase().includes(q.toLowerCase()) ||
+      (p.data.excerpt ?? "").toLowerCase().includes(q.toLowerCase())
+    )
+  : allPrayers;
+
+const total = filtered.length;
+const totalPages = Math.ceil(total / PER_PAGE);
+const prayers = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
+const categories = [
+  { slug: "all", name: "Toate", count: allPrayers.length },
+  { slug: "vindecare", name: "Vindecare", count: allPrayers.filter((p) => p.data.category === "vindecare").length },
+  { slug: "dimineata", name: "Dimineață", count: allPrayers.filter((p) => p.data.category === "dimineata").length },
+  { slug: "seara", name: "Seară", count: allPrayers.filter((p) => p.data.category === "seara").length },
+  { slug: "psalmi", name: "Psalmi", count: allPrayers.filter((p) => p.data.category === "psalmi").length },
+  { slug: "familie", name: "Familie", count: allPrayers.filter((p) => p.data.category === "familie").length },
+  { slug: "ocazii", name: "Ocazii speciale", count: allPrayers.filter((p) => p.data.category === "ocazii").length },
+];
+
+const siteUrl = "https://rugaciunisanatate.ro";
+const canonical = `${siteUrl}/rugaciuni${cat !== "all" ? `?cat=${cat}` : ""}`;
+
+const schema = [
+  {
+    "@type": "CollectionPage",
+    "@id": `${siteUrl}/rugaciuni#page`,
+    url: canonical,
+    name: `Rugăciuni ortodoxe${cat !== "all" ? ` — ${categories.find((c) => c.slug === cat)?.name}` : ""}`,
+    description: "Colecție completă de rugăciuni ortodoxe pentru sănătate și vindecare.",
+    inLanguage: "ro-RO",
+    isPartOf: { "@id": `${siteUrl}/#website` },
+  },
+  {
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Acasă", item: siteUrl },
+      { "@type": "ListItem", position: 2, name: "Rugăciuni", item: `${siteUrl}/rugaciuni` },
+    ],
+  },
+];
+---
+
+<Base
+  title={`Rugăciuni ortodoxe${cat !== "all" ? ` — ${categories.find((c) => c.slug === cat)?.name}` : " — Colecție completă"}`}
+  description="Explorează colecția completă de rugăciuni ortodoxe pentru sănătate, vindecare, dimineață, seară și familie."
+  canonical={canonical}
+  schema={schema}
+  activeNav="rugaciuni"
+>
+  <div class="catalog-hero">
+    <div class="catalog-hero-inner">
+      <div class="catalog-hero-label">✦ Colecția completă ✦</div>
+      <h1 class="catalog-hero-title">Toate <em>rugăciunile</em> noastre</h1>
+      <div class="catalog-search">
+        <form method="get" action="/rugaciuni">
+          {cat !== "all" && <input type="hidden" name="cat" value={cat} />}
+          <input
+            type="search"
+            name="q"
+            value={q}
+            placeholder="Caută o rugăciune..."
+            aria-label="Caută rugăciuni"
+          />
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="ad-strip">
+    <AdSense slot="4567890123" format="horizontal" />
+  </div>
+
+  <Breadcrumb crumbs={[{ label: "Rugăciuni" }]} />
+
+  <div class="catalog-body">
+    <aside class="filters-sidebar">
+      <div class="filter-card">
+        <div class="filter-title">Categorii</div>
+        <div class="filter-list">
+          {categories.map((c) => (
+            <a
+              href={`/rugaciuni${c.slug !== "all" ? `?cat=${c.slug}` : ""}`}
+              class:list={["filter-item", cat === c.slug && "active"]}
+            >
+              <span class="filter-name">{c.name}</span>
+              <span class="filter-count">{c.count}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <div class="filter-card">
+        <div class="filter-title">Sortare</div>
+        <div class="filter-list">
+          <a href={`?${new URLSearchParams({ ...(cat !== "all" && { cat }), sort: "recent" })}`}
+            class:list={["filter-item", sort !== "alpha" && "active"]}>
+            <span class="filter-name">Recente</span>
+          </a>
+          <a href={`?${new URLSearchParams({ ...(cat !== "all" && { cat }), sort: "alpha" })}`}
+            class:list={["filter-item", sort === "alpha" && "active"]}>
+            <span class="filter-name">Alfabetic</span>
+          </a>
+        </div>
+      </div>
+
+      <AdSense slot="5678901234" format="rectangle" class="ad-banner rect" />
+    </aside>
+
+    <main>
+      <div class="results-header">
+        <div class="results-count">
+          <strong>{total}</strong> rugăciuni găsite
+          {q && <span> pentru „{q}"</span>}
+        </div>
+      </div>
+
+      {prayers.length > 0 ? (
+        <div class="prayers-grid">
+          {prayers.map((p) => (
+            <PrayerCard
+              title={p.data.title}
+              slug={p.data.slug ?? p.id}
+              excerpt={p.data.excerpt}
+              category={p.data.category}
+              readingTime={p.data.reading_time}
+              hasAudio={!!p.data.audio_url}
+              publishedAt={p.data.published_at}
+            />
+          ))}
+        </div>
+      ) : (
+        <div style="text-align:center;padding:80px 20px;color:var(--text-light)">
+          <div style="font-size:3rem;margin-bottom:16px">🔍</div>
+          <p>Nu am găsit rugăciuni pentru căutarea ta.</p>
+          <a href="/rugaciuni" class="btn-primary" style="margin-top:20px;display:inline-flex">
+            Resetează filtrele
+          </a>
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <nav class="pagination" aria-label="Paginare">
+          {page > 1 && (
+            <a href={`?${new URLSearchParams({ ...(cat !== "all" && { cat }), ...(q && { q }), page: String(page - 1) })}`}>
+              ‹
+            </a>
+          )}
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+            p === page
+              ? <span>{p}</span>
+              : <a href={`?${new URLSearchParams({ ...(cat !== "all" && { cat }), ...(q && { q }), page: String(p) })}`}>{p}</a>
+          ))}
+          {page < totalPages && (
+            <a href={`?${new URLSearchParams({ ...(cat !== "all" && { cat }), ...(q && { q }), page: String(page + 1) })}`}>
+              ›
+            </a>
+          )}
+        </nav>
+      )}
+    </main>
+  </div>
+</Base>

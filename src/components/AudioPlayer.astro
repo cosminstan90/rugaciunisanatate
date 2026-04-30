@@ -1,0 +1,77 @@
+---
+interface Props {
+  src: string;
+  title?: string;
+}
+const { src, title = "Ascultă rugăciunea" } = Astro.props;
+---
+
+<div class="audio-player" id="audioPlayer" data-src={src}>
+  <div class="audio-top">
+    <span class="audio-label">🎧 {title}</span>
+    <span id="audioSpeed" style="font-size:0.75rem;color:rgba(255,255,255,0.5);cursor:pointer" onclick="cycleSpeed()">1×</span>
+  </div>
+  <div class="audio-controls">
+    <button class="audio-btn" onclick="seekBy(-15)" title="Înapoi 15s" aria-label="Înapoi 15 secunde">⏮</button>
+    <button class="audio-btn play-btn" id="playBtn" onclick="togglePlay()" aria-label="Play/Pause">▶</button>
+    <button class="audio-btn" onclick="seekBy(15)" title="Înainte 15s" aria-label="Înainte 15 secunde">⏭</button>
+  </div>
+  <div class="audio-progress">
+    <span class="audio-time" id="currentTime">0:00</span>
+    <div class="progress-track" onclick="seekTo(event)" role="slider" aria-label="Progres audio">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <span class="audio-time" id="totalTime">0:00</span>
+  </div>
+</div>
+
+<script>
+  const player = document.getElementById("audioPlayer");
+  const src = player?.dataset.src;
+  if (!src) throw new Error("No audio src");
+
+  const audio = new Audio(src);
+  const playBtn = document.getElementById("playBtn")!;
+  const progressFill = document.getElementById("progressFill")!;
+  const currentTimeEl = document.getElementById("currentTime")!;
+  const totalTimeEl = document.getElementById("totalTime")!;
+  const speedEl = document.getElementById("audioSpeed")!;
+  const speeds = [1, 1.25, 1.5, 0.75];
+  let speedIdx = 0;
+
+  function fmt(s: number) {
+    const m = Math.floor(s / 60);
+    return `${m}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+  }
+
+  audio.addEventListener("loadedmetadata", () => {
+    totalTimeEl.textContent = fmt(audio.duration);
+  });
+
+  audio.addEventListener("timeupdate", () => {
+    const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+    progressFill.style.width = `${pct}%`;
+    currentTimeEl.textContent = fmt(audio.currentTime);
+  });
+
+  audio.addEventListener("ended", () => { playBtn.textContent = "▶"; });
+
+  (window as any).togglePlay = () => {
+    if (audio.paused) { audio.play(); playBtn.textContent = "⏸"; }
+    else { audio.pause(); playBtn.textContent = "▶"; }
+  };
+
+  (window as any).seekBy = (s: number) => { audio.currentTime = Math.max(0, audio.currentTime + s); };
+
+  (window as any).seekTo = (e: MouseEvent) => {
+    const track = (e.currentTarget as HTMLElement);
+    const rect = track.getBoundingClientRect();
+    audio.currentTime = ((e.clientX - rect.left) / rect.width) * audio.duration;
+  };
+
+  (window as any).cycleSpeed = () => {
+    speedIdx = (speedIdx + 1) % speeds.length;
+    audio.playbackRate = speeds[speedIdx]!;
+    speedEl.textContent = `${speeds[speedIdx]}×`;
+  };
+</script>

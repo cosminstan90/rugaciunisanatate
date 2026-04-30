@@ -1,0 +1,48 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  canonical: string;
+  ogImage?: string;
+  noindex?: boolean;
+}
+
+const { title, description, canonical, ogImage, noindex = false } = Astro.props;
+
+const siteUrl = "https://rugaciunisanatate.ro";
+const defaultOgImage = `${siteUrl}/og-default.png`;
+const fullTitle = title.includes("Rugăciuni Sănătate") ? title : `${title} — Rugăciuni Sănătate`;
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content={canonical} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={ogImage ?? defaultOgImage} />
+<meta property="og:locale" content="ro_RO" />
+<meta property="og:site_name" content="Rugăciuni Sănătate" />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage ?? defaultOgImage} />
+
+<!-- Search Console & Bing verification -->
+{import.meta.env.PUBLIC_GSC_VERIFICATION && (
+  <meta name="google-site-verification" content={import.meta.env.PUBLIC_GSC_VERIFICATION} />
+)}
+{import.meta.env.PUBLIC_BING_VERIFICATION && (
+  <meta name="msvalidate.01" content={import.meta.env.PUBLIC_BING_VERIFICATION} />
+)}
+
+<!-- Favicon -->
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="icon" href="/logo.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />

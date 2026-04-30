@@ -1,0 +1,84 @@
+---
+import Base from "../layouts/Base.astro";
+import Breadcrumb from "../components/Breadcrumb.astro";
+
+const siteUrl = "https://rugaciunisanatate.ro";
+const schema = [
+  {
+    "@type": "AboutPage",
+    "@id": `${siteUrl}/despre#page`,
+    url: `${siteUrl}/despre`,
+    name: "Despre noi — Rugăciuni Sănătate",
+    inLanguage: "ro-RO",
+    isPartOf: { "@id": `${siteUrl}/#website` },
+    about: { "@id": `${siteUrl}/#organization` },
+  },
+  {
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Acasă", item: siteUrl },
+      { "@type": "ListItem", position: 2, name: "Despre noi", item: `${siteUrl}/despre` },
+    ],
+  },
+];
+---
+
+<Base
+  title="Despre noi — Rugăciuni Sănătate"
+  description="Aflați povestea din spatele Rugăciuni Sănătate — misiunea noastră de a aduce rugăciunea ortodoxă mai aproape de toți românii."
+  canonical={`${siteUrl}/despre`}
+  schema={schema}
+>
+  <Breadcrumb crumbs={[{ label: "Despre noi" }]} />
+
+  <div class="static-page">
+    <div class="ornament" style="margin-bottom:24px">Despre noi</div>
+    <h1>Hrană pentru suflet</h1>
+    <p>
+      <strong>Rugăciunisanatate.ro</strong> este o colecție vie de rugăciuni ortodoxe,
+      adunată cu dragoste pentru toți cei care caută vindecare, pace și apropierea de Dumnezeu.
+    </p>
+    <p>
+      Credința noastră este că rugăciunea vindecă — nu numai sufletul, ci și trupul.
+      Știința modernă confirmă tot mai mult ceea ce Tradiția Bisericii ne-a spus dintotdeauna:
+      rugăciunea aduce pace, reduce stresul și întărește corpul.
+    </p>
+
+    <h2>Misiunea noastră</h2>
+    <p>
+      Ne-am propus să punem la îndemâna tuturor românilor cea mai completă colecție de
+      rugăciuni ortodoxe pentru sănătate — rugăciuni de vindecare, acatiste, psalmi,
+      rugăciuni de dimineață și de seară, rugăciuni pentru cei dragi.
+    </p>
+    <p>
+      Fiecare rugăciune este verificată cu grijă, tradusă în română accesibilă și
+      însoțită de context spiritual și surse tradiționale.
+    </p>
+
+    <h2>Calendarul Ortodox</h2>
+    <p>
+      Secțiunea noastră de Calendar Ortodox afișează sfinții fiecărei zile, zilele de post
+      și dezlegările — o busolă spirituală pentru viața de zi cu zi în credință.
+    </p>
+
+    <h2>Sfinții tămăduitori</h2>
+    <p>
+      Un capitol special al site-ului este dedicat sfinților cu darul vindecării:
+      Sfântul Pantelimon, Sfântul Nectarie de la Eghina, Sfântul Luca al Crimeei,
+      Sfinții Cosma și Damian și mulți alții. Fiecare sfânt are propria pagină cu
+      rugăciuni, acatiste și viața descrisă pe scurt.
+    </p>
+
+    <div style="margin-top:40px;padding:24px;background:var(--parchment-dark);border:1px solid rgba(196,151,58,0.2);border-radius:var(--radius)">
+      <div class="ornament" style="margin-bottom:16px">✦</div>
+      <p style="text-align:center;font-family:var(--font-display);font-size:1.1rem;font-style:italic;color:var(--dark)">
+        „Rugați-vă neîncetat." — 1 Tesaloniceni 5:17
+      </p>
+    </div>
+
+    <div style="margin-top:32px;display:flex;gap:12px;flex-wrap:wrap">
+      <a href="/rugaciuni" class="btn-primary">Explorează rugăciunile</a>
+      <a href="/contact" class="btn-outline">Contactează-ne</a>
+    </div>
+  </div>
+</Base>

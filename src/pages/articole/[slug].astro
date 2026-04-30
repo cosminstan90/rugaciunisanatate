@@ -1,0 +1,191 @@
+---
+import { getEmDashEntry, getEmDashCollection, getSeoMeta, decodeSlug } from "emdash";
+import { PortableText } from "emdash/ui";
+import Base from "../../layouts/Base.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import ShareButtons from "../../components/ShareButtons.astro";
+import ArticleCard from "../../components/ArticleCard.astro";
+import AdSense from "../../components/AdSense.astro";
+
+const slug = decodeSlug(Astro.params.slug);
+if (!slug) return Astro.redirect("/404");
+
+const { entry: article, cacheHint } = await getEmDashEntry("articole", slug);
+if (!article) return Astro.redirect("/404");
+
+Astro.cache.set(cacheHint);
+
+const siteUrl = "https://rugaciunisanatate.ro";
+const pageUrl = `${siteUrl}/articole/${slug}`;
+
+const seo = getSeoMeta(article, { siteTitle: "Rugăciuni Sănătate", siteUrl, path: `/articole/${slug}` });
+
+const [{ entries: relatedArticles }] = await Promise.all([
+  getEmDashCollection("articole", {
+    orderBy: { published_at: "desc" },
+    limit: 4,
+    where: { status: "published" },
+  }),
+]);
+const related = relatedArticles.filter((a) => a.id !== article.id).slice(0, 3);
+
+const publishedDate = article.data.published_at
+  ? new Date(article.data.published_at).toISOString()
+  : undefined;
+
+const author = article.data.bylines?.[0];
+const initials = author?.name
+  ? author.name.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase()
+  : "RS";
+
+const schema = [
+  {
+    "@type": "Article",
+    "@id": `${pageUrl}#article`,
+    headline: article.data.title,
+    description: seo.description,
+    url: pageUrl,
+    datePublished: publishedDate,
+    dateModified: article.data.updated_at
+      ? new Date(article.data.updated_at).toISOString()
+      : publishedDate,
+    inLanguage: "ro-RO",
+    isPartOf: { "@id": `${siteUrl}/#website` },
+    publisher: { "@id": `${siteUrl}/#organization` },
+    ...(author && {
+      author: { "@type": "Person", name: author.name },
+    }),
+    articleSection: article.data.category ?? "Spiritualitate",
+  },
+  {
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Acasă", item: siteUrl },
+      { "@type": "ListItem", position: 2, name: "Articole", item: `${siteUrl}/articole` },
+      { "@type": "ListItem", position: 3, name: article.data.title, item: pageUrl },
+    ],
+  },
+];
+---
+
+<Base
+  title={seo.title}
+  description={seo.description}
+  canonical={pageUrl}
+  schema={schema}
+  activeNav="articole"
+>
+  <!-- Reading progress bar -->
+  <div
+    style="position:fixed;top:68px;left:0;width:0%;height:3px;background:var(--crimson);z-index:99;transition:width 0.1s"
+    id="progressBar"
+  ></div>
+
+  <Breadcrumb
+    crumbs={[
+      { label: "Articole", href: "/articole" },
+      { label: article.data.title },
+    ]}
+  />
+
+  <div class="page-body">
+    <main>
+      <div class="article-header" style="margin-bottom:32px">
+        {article.data.category && (
+          <span style="font-family:var(--font-display);font-size:0.7rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold)">
+            {article.data.category}
+          </span>
+        )}
+        <h1 style="font-family:var(--font-display);font-size:clamp(1.8rem,4vw,2.6rem);font-weight:600;color:var(--dark);line-height:1.15;margin:12px 0 16px">
+          {article.data.title}
+        </h1>
+        <div style="display:flex;gap:12px;font-size:0.82rem;color:var(--text-light);flex-wrap:wrap">
+          {publishedDate && (
+            <span>{new Date(publishedDate).toLocaleDateString("ro-RO", { day: "numeric", month: "long", year: "numeric" })}</span>
+          )}
+          {article.data.reading_time && <><span>·</span><span>{article.data.reading_time} min citire</span></>}
+          {author && <><span>·</span><span>{author.name}</span></>}
+        </div>
+      </div>
+
+      <div style="font-size:1rem;line-height:1.9;color:var(--text)" id="articleContent">
+        {article.data.content
+          ? <PortableText value={article.data.content} />
+          : <p style="color:var(--text-light);font-style:italic">Conținut în curs de adăugare...</p>
+        }
+      </div>
+
+      <div class="in-article-ad">
+        <AdSense slot="8901234567" format="horizontal" />
+      </div>
+
+      <ShareButtons url={pageUrl} title={article.data.title} />
+
+      {author && (
+        <div class="author-card">
+          <div class="author-avatar-circle">
+            <span class="author-initials">{initials}</span>
+            <div class="author-verified-badge">✓</div>
+          </div>
+          <div class="author-info">
+            <div class="author-eyebrow">✦ Autor</div>
+            <div class="author-name">{author.name}</div>
+            {author.role && <div class="author-role">{author.role}</div>}
+            {author.bio && <p class="author-bio-short">{author.bio}</p>}
+            <div class="author-row">
+              <a href={`/autori/${author.slug}`} class="author-link">Toate articolele →</a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {related.length > 0 && (
+        <div style="margin-top:48px">
+          <h3 style="font-family:var(--font-display);font-size:1.4rem;font-weight:600;color:var(--dark);margin-bottom:24px">
+            Articole înrudite
+          </h3>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px">
+            {related.map((a) => (
+              <ArticleCard
+                title={a.data.title}
+                slug={a.data.slug ?? a.id}
+                excerpt={a.data.excerpt}
+                category={a.data.category}
+                readingTime={a.data.reading_time}
+                publishedAt={a.data.published_at}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+    </main>
+
+    <aside>
+      <AdSense slot="9012345678" format="rectangle" class="ad-banner rect" />
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">✦ Rugăciuni populare</div>
+        <ul class="sidebar-list">
+          <li><a href="/rugaciuni?cat=vindecare">Rugăciuni de vindecare</a></li>
+          <li><a href="/rugaciuni?cat=dimineata">Rugăciuni de dimineață</a></li>
+          <li><a href="/rugaciuni?cat=familie">Rugăciuni pentru familie</a></li>
+          <li><a href="/sfinti/sfantul-pantelimon">Acatistul Sf. Pantelimon</a></li>
+          <li><a href="/sfinti/sfantul-nectarie">Acatistul Sf. Nectarie</a></li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</Base>
+
+<script>
+  const bar = document.getElementById("progressBar");
+  const content = document.getElementById("articleContent");
+  if (bar && content) {
+    window.addEventListener("scroll", () => {
+      const rect = content.getBoundingClientRect();
+      const contentHeight = content.offsetHeight;
+      const scrolled = Math.max(0, -rect.top);
+      const pct = Math.min(100, (scrolled / contentHeight) * 100);
+      bar.style.width = `${pct}%`;
+    });
+  }
+</script>

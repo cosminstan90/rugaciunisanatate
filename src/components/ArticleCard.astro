@@ -1,0 +1,28 @@
+---
+interface Props {
+  title: string;
+  slug: string;
+  excerpt?: string;
+  category?: string;
+  readingTime?: number;
+  publishedAt?: string;
+  cover?: string;
+}
+const { title, slug, excerpt, category, readingTime, publishedAt, cover } = Astro.props;
+---
+
+<a href={`/articole/${slug}`} class="article-card">
+  <div class="article-card-cover">{cover ?? "🕯️"}</div>
+  <div class="article-card-body">
+    {category && <div class="article-card-cat">{category}</div>}
+    <div class="article-card-title">{title}</div>
+    {excerpt && <div class="article-card-excerpt">{excerpt}</div>}
+    <div class="article-card-meta">
+      {publishedAt && (
+        <span>{new Date(publishedAt).toLocaleDateString("ro-RO", { day: "numeric", month: "long" })}</span>
+      )}
+      {publishedAt && readingTime && <span>·</span>}
+      {readingTime && <span>{readingTime} min</span>}
+    </div>
+  </div>
+</a>
