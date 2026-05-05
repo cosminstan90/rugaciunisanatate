@@ -10,7 +10,6 @@
       "urlPattern": "/[slug]",
       "fields": [
         { "slug": "title",       "label": "Titlu",             "type": "text",      "required": true,  "searchable": true  },
-        { "slug": "slug",        "label": "Slug URL",          "type": "text",      "required": true,  "unique": true      },
         { "slug": "excerpt",     "label": "Rezumat scurt",     "type": "text",      "required": false, "searchable": true  },
         { "slug": "content",     "label": "Conținut",          "type": "portableText", "required": true,  "searchable": true  },
         { "slug": "category",    "label": "Categorie",         "type": "text",      "required": false                      },
@@ -32,7 +31,6 @@
       "urlPattern": "/sfinti/[slug]",
       "fields": [
         { "slug": "name",        "label": "Nume",              "type": "text",      "required": true,  "searchable": true  },
-        { "slug": "slug",        "label": "Slug URL",          "type": "text",      "required": true,  "unique": true      },
         { "slug": "subtitle",    "label": "Subtitlu",          "type": "text",      "required": false                      },
         { "slug": "description", "label": "Viață și descriere","type": "portableText", "required": false, "searchable": true  },
         { "slug": "excerpt",     "label": "Rezumat scurt",     "type": "text",      "required": false                      },
@@ -55,7 +53,6 @@
       "urlPattern": "/articole/[slug]",
       "fields": [
         { "slug": "title",        "label": "Titlu",             "type": "text",      "required": true,  "searchable": true  },
-        { "slug": "slug",         "label": "Slug URL",          "type": "text",      "required": true,  "unique": true      },
         { "slug": "excerpt",      "label": "Rezumat scurt",     "type": "text",      "required": false, "searchable": true  },
         { "slug": "content",      "label": "Conținut",          "type": "portableText", "required": true,  "searchable": true  },
         { "slug": "category",     "label": "Categorie",         "type": "text",      "required": false                      },
@@ -80,7 +77,6 @@
       "urlPattern": "/autori/[slug]",
       "fields": [
         { "slug": "name",    "label": "Nume",        "type": "text",      "required": true,  "searchable": true },
-        { "slug": "slug",    "label": "Slug URL",    "type": "text",      "required": true,  "unique": true     },
         { "slug": "bio",     "label": "Biografie",   "type": "portableText", "required": false                    },
         { "slug": "role",    "label": "Rol",         "type": "text",      "required": false                    },
         { "slug": "avatar",  "label": "Avatar",      "type": "image",     "required": false                    },
