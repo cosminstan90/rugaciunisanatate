@@ -9,17 +9,16 @@
       "supports": ["search", "revisions"],
       "urlPattern": "/[slug]",
       "fields": [
-        { "slug": "title",       "label": "Titlu",             "type": "text",      "required": true,  "searchable": true  },
-        { "slug": "excerpt",     "label": "Rezumat scurt",     "type": "text",      "required": false, "searchable": true  },
-        { "slug": "content",     "label": "Conținut",          "type": "portableText", "required": true,  "searchable": true  },
-        { "slug": "category",    "label": "Categorie",         "type": "text",      "required": false                      },
-        { "slug": "saint_slug",  "label": "Sfânt asociat (slug)", "type": "text",   "required": false                      },
-        { "slug": "audio_url",   "label": "URL Audio",         "type": "url",       "required": false                      },
-        { "slug": "reading_time","label": "Timp citire (min)", "type": "number",    "required": false                      },
-        { "slug": "published_at","label": "Data publicării",   "type": "datetime",      "required": false                      },
-        { "slug": "og_image",    "label": "Imagine OG",        "type": "image",     "required": false                      },
-        { "slug": "seo_title",   "label": "SEO Title",         "type": "text",      "required": false                      },
-        { "slug": "seo_description", "label": "SEO Description", "type": "text",   "required": false                      }
+        { "slug": "title",          "label": "Titlu",                  "type": "text",         "required": true,  "searchable": true },
+        { "slug": "excerpt",        "label": "Rezumat scurt",          "type": "text",         "required": false, "searchable": true },
+        { "slug": "content",        "label": "Conținut",               "type": "portableText", "required": true,  "searchable": true },
+        { "slug": "category",       "label": "Categorie",              "type": "text",         "required": false },
+        { "slug": "saint_slug",     "label": "Sfânt asociat (slug)",   "type": "text",         "required": false },
+        { "slug": "audio_url",      "label": "URL Audio",              "type": "url",          "required": false },
+        { "slug": "reading_time",   "label": "Timp citire (min)",      "type": "number",       "required": false },
+        { "slug": "og_image",       "label": "Imagine OG",             "type": "image",        "required": false },
+        { "slug": "seo_title",      "label": "SEO Title",              "type": "text",         "required": false },
+        { "slug": "seo_description","label": "SEO Description",        "type": "text",         "required": false }
       ]
     },
     {
@@ -30,18 +29,18 @@
       "supports": ["search", "revisions"],
       "urlPattern": "/sfinti/[slug]",
       "fields": [
-        { "slug": "name",        "label": "Nume",              "type": "text",      "required": true,  "searchable": true  },
-        { "slug": "subtitle",    "label": "Subtitlu",          "type": "text",      "required": false                      },
-        { "slug": "description", "label": "Viață și descriere","type": "portableText", "required": false, "searchable": true  },
-        { "slug": "excerpt",     "label": "Rezumat scurt",     "type": "text",      "required": false                      },
-        { "slug": "feast_date",  "label": "Data prăznuirii",   "type": "text",      "required": false                      },
-        { "slug": "life_dates",  "label": "Ani de viață",      "type": "text",      "required": false                      },
-        { "slug": "saint_type",  "label": "Tip sfânt",         "type": "text",      "required": false                      },
-        { "slug": "patron_of",   "label": "Patron al",         "type": "text",      "required": false                      },
-        { "slug": "icon",        "label": "Icoană",            "type": "image",     "required": false                      },
-        { "slug": "og_image",    "label": "Imagine OG",        "type": "image",     "required": false                      },
-        { "slug": "seo_title",   "label": "SEO Title",         "type": "text",      "required": false                      },
-        { "slug": "seo_description", "label": "SEO Description", "type": "text",   "required": false                      }
+        { "slug": "name",           "label": "Nume",                   "type": "text",         "required": true,  "searchable": true },
+        { "slug": "subtitle",       "label": "Subtitlu",               "type": "text",         "required": false },
+        { "slug": "description",    "label": "Viață și descriere",     "type": "portableText", "required": false, "searchable": true },
+        { "slug": "excerpt",        "label": "Rezumat scurt",          "type": "text",         "required": false },
+        { "slug": "feast_date",     "label": "Data prăznuirii",        "type": "text",         "required": false },
+        { "slug": "life_dates",     "label": "Ani de viață",           "type": "text",         "required": false },
+        { "slug": "saint_type",     "label": "Tip sfânt",              "type": "text",         "required": false },
+        { "slug": "patron_of",      "label": "Patron al",              "type": "text",         "required": false },
+        { "slug": "icon",           "label": "Icoană",                 "type": "image",        "required": false },
+        { "slug": "og_image",       "label": "Imagine OG",             "type": "image",        "required": false },
+        { "slug": "seo_title",      "label": "SEO Title",              "type": "text",         "required": false },
+        { "slug": "seo_description","label": "SEO Description",        "type": "text",         "required": false }
       ]
     },
     {
@@ -52,20 +51,19 @@
       "supports": ["search", "revisions"],
       "urlPattern": "/articole/[slug]",
       "fields": [
-        { "slug": "title",        "label": "Titlu",             "type": "text",      "required": true,  "searchable": true  },
-        { "slug": "excerpt",      "label": "Rezumat scurt",     "type": "text",      "required": false, "searchable": true  },
-        { "slug": "content",      "label": "Conținut",          "type": "portableText", "required": true,  "searchable": true  },
-        { "slug": "category",     "label": "Categorie",         "type": "text",      "required": false                      },
-        { "slug": "reading_time", "label": "Timp citire (min)", "type": "number",    "required": false                      },
-        { "slug": "published_at", "label": "Data publicării",   "type": "datetime",      "required": false                      },
-        { "slug": "ai_generated", "label": "Generat cu AI",     "type": "boolean",   "required": false                      },
-        { "slug": "ai_model",     "label": "Model AI folosit",  "type": "text",      "required": false                      },
-        { "slug": "ai_reviewed",  "label": "Verificat de editor","type": "boolean",  "required": false                      },
-        { "slug": "sources",      "label": "Surse / Bibliografie","type": "text",    "required": false                      },
-        { "slug": "og_image",     "label": "Imagine OG",        "type": "image",     "required": false                      },
-        { "slug": "seo_title",    "label": "SEO Title",         "type": "text",      "required": false                      },
-        { "slug": "seo_description", "label": "SEO Description","type": "text",      "required": false                      },
-        { "slug": "schema_type",  "label": "Schema.org Type",   "type": "text",      "required": false                      }
+        { "slug": "title",          "label": "Titlu",                  "type": "text",         "required": true,  "searchable": true },
+        { "slug": "excerpt",        "label": "Rezumat scurt",          "type": "text",         "required": false, "searchable": true },
+        { "slug": "content",        "label": "Conținut",               "type": "portableText", "required": true,  "searchable": true },
+        { "slug": "category",       "label": "Categorie",              "type": "text",         "required": false },
+        { "slug": "reading_time",   "label": "Timp citire (min)",      "type": "number",       "required": false },
+        { "slug": "ai_generated",   "label": "Generat cu AI",          "type": "boolean",      "required": false },
+        { "slug": "ai_model",       "label": "Model AI folosit",       "type": "text",         "required": false },
+        { "slug": "ai_reviewed",    "label": "Verificat de editor",    "type": "boolean",      "required": false },
+        { "slug": "sources",        "label": "Surse / Bibliografie",   "type": "text",         "required": false },
+        { "slug": "og_image",       "label": "Imagine OG",             "type": "image",        "required": false },
+        { "slug": "seo_title",      "label": "SEO Title",              "type": "text",         "required": false },
+        { "slug": "seo_description","label": "SEO Description",        "type": "text",         "required": false },
+        { "slug": "schema_type",    "label": "Schema.org Type",        "type": "text",         "required": false }
       ]
     },
     {
@@ -76,11 +74,11 @@
       "supports": ["search"],
       "urlPattern": "/autori/[slug]",
       "fields": [
-        { "slug": "name",    "label": "Nume",        "type": "text",      "required": true,  "searchable": true },
-        { "slug": "bio",     "label": "Biografie",   "type": "portableText", "required": false                    },
-        { "slug": "role",    "label": "Rol",         "type": "text",      "required": false                    },
-        { "slug": "avatar",  "label": "Avatar",      "type": "image",     "required": false                    },
-        { "slug": "website", "label": "Website",     "type": "url",       "required": false                    }
+        { "slug": "name",    "label": "Nume",        "type": "text",         "required": true,  "searchable": true },
+        { "slug": "bio",     "label": "Biografie",   "type": "portableText", "required": false },
+        { "slug": "role",    "label": "Rol",         "type": "text",         "required": false },
+        { "slug": "avatar",  "label": "Avatar",      "type": "image",        "required": false },
+        { "slug": "website", "label": "Website",     "type": "url",          "required": false }
       ]
     },
     {
