@@ -6,7 +6,7 @@ import { postgres } from "emdash/db";
 
 export default defineConfig({
 	output: "server",
-	adapter: node({ mode: "standalone" }),
+	adapter: node({ mode: "standalone", trustProxy: true }),
 	image: {
 		layout: "constrained",
 		responsiveStyles: true,
@@ -21,6 +21,7 @@ export default defineConfig({
 				directory: "./uploads",
 				baseUrl: "/_emdash/api/media/file",
 			}),
+			siteUrl: "https://rugaciunisanatate.ro",
 		}),
 	],
 	fonts: [
