@@ -48,7 +48,25 @@ const publishedDate = prayer.data.published_at
   ? new Date(prayer.data.published_at).toISOString()
   : undefined;
 
+const faqItems = Array.isArray(prayer.data.faq_items) ? prayer.data.faq_items : [];
+
 const schema = [
+  ...(faqItems.length > 0
+    ? [
+        {
+          "@type": "FAQPage",
+          "@id": `${pageUrl}#faq`,
+          mainEntity: faqItems.map((item: { question: string; answer: string }) => ({
+            "@type": "Question",
+            name: item.question,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: item.answer,
+            },
+          })),
+        },
+      ]
+    : []),
   {
     "@type": "Article",
     "@id": `${pageUrl}#article`,
