@@ -10,6 +10,7 @@ interface Props {
   description?: string;
   canonical?: string;
   ogImage?: string;
+  ogType?: "website" | "article";
   schema?: object | object[];
   noindex?: boolean;
   activeNav?: string;
@@ -20,6 +21,7 @@ const {
   description = "Rugăciuni ortodoxe pentru sănătate, vindecare și familie. Colecție completă de rugăciuni, acatiste și psalmi.",
   canonical,
   ogImage,
+  ogType = "website",
   schema,
   noindex = false,
   activeNav,
@@ -36,6 +38,7 @@ const {
       description={description}
       canonical={canonical ?? Astro.url.href}
       ogImage={ogImage}
+      ogType={ogType}
       noindex={noindex}
     />
     {schema && <SchemaOrg schema={schema} />}

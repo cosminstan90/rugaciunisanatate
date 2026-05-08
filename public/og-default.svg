@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2c1810;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a0f0a;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#c4973a;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#e8c46a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#c4973a;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)" />
+
+  <!-- Top gold border -->
+  <rect x="0" y="0" width="1200" height="4" fill="url(#gold)" />
+  <!-- Bottom gold border -->
+  <rect x="0" y="626" width="1200" height="4" fill="url(#gold)" />
+
+  <!-- Decorative frame -->
+  <rect x="40" y="40" width="1120" height="550" fill="none" stroke="#c4973a" stroke-width="1" stroke-opacity="0.3" />
+  <rect x="50" y="50" width="1100" height="530" fill="none" stroke="#c4973a" stroke-width="0.5" stroke-opacity="0.2" />
+
+  <!-- Cross ornament top -->
+  <text x="600" y="140" text-anchor="middle" font-family="Georgia, serif" font-size="48" fill="#c4973a" opacity="0.6">✦ ✝️ ✦</text>
+
+  <!-- Main title -->
+  <text x="600" y="270" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="72" font-weight="600" fill="url(#gold)">Rugăciuni Sănătate</text>
+
+  <!-- Divider line -->
+  <line x1="300" y1="305" x2="900" y2="305" stroke="#c4973a" stroke-width="1" stroke-opacity="0.5" />
+
+  <!-- Subtitle -->
+  <text x="600" y="365" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="32" fill="#d4a95a" opacity="0.9">Rugăciuni ortodoxe pentru sănătate și vindecare</text>
+
+  <!-- URL -->
+  <text x="600" y="470" text-anchor="middle" font-family="Georgia, serif" font-size="22" fill="#c4973a" opacity="0.6">rugaciunisanatate.ro</text>
+
+  <!-- Bottom ornament -->
+  <text x="600" y="540" text-anchor="middle" font-family="Georgia, serif" font-size="20" fill="#c4973a" opacity="0.4">✦ ✦ ✦</text>
+</svg>

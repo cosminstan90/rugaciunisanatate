@@ -6,6 +6,12 @@ const SITE = "https://rugaciunisanatate.ro";
 const STATIC_PAGES = [
   { url: "/", priority: "1.0", changefreq: "daily" },
   { url: "/rugaciuni", priority: "0.9", changefreq: "daily" },
+  { url: "/rugaciuni?cat=vindecare", priority: "0.85", changefreq: "weekly" },
+  { url: "/rugaciuni?cat=dimineata", priority: "0.85", changefreq: "weekly" },
+  { url: "/rugaciuni?cat=seara", priority: "0.85", changefreq: "weekly" },
+  { url: "/rugaciuni?cat=psalmi", priority: "0.8", changefreq: "weekly" },
+  { url: "/rugaciuni?cat=familie", priority: "0.8", changefreq: "weekly" },
+  { url: "/rugaciuni?cat=ocazii", priority: "0.75", changefreq: "weekly" },
   { url: "/sfinti", priority: "0.8", changefreq: "weekly" },
   { url: "/articole", priority: "0.8", changefreq: "daily" },
   { url: "/calendar", priority: "0.7", changefreq: "daily" },

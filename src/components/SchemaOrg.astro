@@ -9,12 +9,43 @@ const siteOrganization = {
   "@type": "Organization",
   "@id": "https://rugaciunisanatate.ro/#organization",
   name: "Rugăciuni Sănătate",
+  alternateName: "Rugaciuni Sanatate",
   url: "https://rugaciunisanatate.ro",
   logo: {
     "@type": "ImageObject",
+    "@id": "https://rugaciunisanatate.ro/#logo",
     url: "https://rugaciunisanatate.ro/logo.svg",
+    width: 200,
+    height: 60,
+    caption: "Rugăciuni Sănătate",
   },
-  sameAs: [],
+  image: { "@id": "https://rugaciunisanatate.ro/#logo" },
+  description: "Colecție completă de rugăciuni ortodoxe românești pentru sănătate, vindecare trupească și sufletească, acatiste, psalmi și calendar ortodox zilnic.",
+  foundingDate: "2026",
+  areaServed: {
+    "@type": "Country",
+    name: "România",
+    identifier: "RO",
+  },
+  knowsAbout: [
+    "rugăciuni ortodoxe",
+    "spiritualitate creștină ortodoxă",
+    "sfinți tămăduitori",
+    "acatiste",
+    "psalmi",
+    "calendar ortodox",
+    "vindecare prin credință",
+  ],
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer support",
+    email: "contact@rugaciunisanatate.ro",
+    availableLanguage: { "@type": "Language", name: "Romanian" },
+  },
+  sameAs: [
+    "https://www.facebook.com/rugaciunisanatate",
+    "https://www.instagram.com/rugaciunisanatate",
+  ],
 };
 
 const webSite = {
