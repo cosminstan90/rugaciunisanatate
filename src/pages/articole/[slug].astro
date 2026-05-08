@@ -6,6 +6,7 @@ import Breadcrumb from "../../components/Breadcrumb.astro";
 import ShareButtons from "../../components/ShareButtons.astro";
 import ArticleCard from "../../components/ArticleCard.astro";
 import AdSense from "../../components/AdSense.astro";
+import { ptToText } from "../../lib/ptToText";
 
 const slug = decodeSlug(Astro.params.slug);
 if (!slug) return Astro.redirect("/404");
@@ -38,11 +39,14 @@ const initials = author?.name
   ? author.name.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase()
   : "RS";
 
+const articleTitle = ptToText(article.data.title);
+const articleCategory = ptToText(article.data.category);
+
 const schema = [
   {
     "@type": "Article",
     "@id": `${pageUrl}#article`,
-    headline: article.data.title,
+    headline: articleTitle,
     description: seo.description,
     url: pageUrl,
     datePublished: publishedDate,
@@ -55,14 +59,14 @@ const schema = [
     ...(author && {
       author: { "@type": "Person", name: author.name },
     }),
-    articleSection: article.data.category ?? "Spiritualitate",
+    articleSection: articleCategory || "Spiritualitate",
   },
   {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Acasă", item: siteUrl },
       { "@type": "ListItem", position: 2, name: "Articole", item: `${siteUrl}/articole` },
-      { "@type": "ListItem", position: 3, name: article.data.title, item: pageUrl },
+      { "@type": "ListItem", position: 3, name: articleTitle, item: pageUrl },
     ],
   },
 ];
@@ -84,20 +88,20 @@ const schema = [
   <Breadcrumb
     crumbs={[
       { label: "Articole", href: "/articole" },
-      { label: article.data.title },
+      { label: articleTitle },
     ]}
   />
 
   <div class="page-body">
     <main>
       <div class="article-header" style="margin-bottom:32px">
-        {article.data.category && (
+        {articleCategory && (
           <span style="font-family:var(--font-display);font-size:0.7rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold)">
-            {article.data.category}
+            {articleCategory}
           </span>
         )}
         <h1 style="font-family:var(--font-display);font-size:clamp(1.8rem,4vw,2.6rem);font-weight:600;color:var(--dark);line-height:1.15;margin:12px 0 16px">
-          {article.data.title}
+          {articleTitle}
         </h1>
         <div style="display:flex;gap:12px;font-size:0.82rem;color:var(--text-light);flex-wrap:wrap">
           {publishedDate && (
@@ -119,7 +123,7 @@ const schema = [
         <AdSense slot="8901234567" format="horizontal" />
       </div>
 
-      <ShareButtons url={pageUrl} title={article.data.title} />
+      <ShareButtons url={pageUrl} title={articleTitle} />
 
       {author && (
         <div class="author-card">
@@ -147,10 +151,10 @@ const schema = [
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px">
             {related.map((a) => (
               <ArticleCard
-                title={a.data.title}
+                title={ptToText(a.data.title)}
                 slug={a.data.slug ?? a.id}
-                excerpt={a.data.excerpt}
-                category={a.data.category}
+                excerpt={ptToText(a.data.excerpt)}
+                category={ptToText(a.data.category)}
                 readingTime={a.data.reading_time}
                 publishedAt={a.data.published_at}
               />

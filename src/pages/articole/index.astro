@@ -4,6 +4,7 @@ import Base from "../../layouts/Base.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
 import ArticleCard from "../../components/ArticleCard.astro";
 import AdSense from "../../components/AdSense.astro";
+import { ptToText } from "../../lib/ptToText";
 
 const url = Astro.url;
 const page = parseInt(url.searchParams.get("page") ?? "1");
@@ -64,10 +65,10 @@ const schema = [
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px">
         {articles.map((a) => (
           <ArticleCard
-            title={a.data.title}
+            title={ptToText(a.data.title)}
             slug={a.data.slug ?? a.id}
-            excerpt={a.data.excerpt}
-            category={a.data.category}
+            excerpt={ptToText(a.data.excerpt)}
+            category={ptToText(a.data.category)}
             readingTime={a.data.reading_time}
             publishedAt={a.data.published_at}
           />

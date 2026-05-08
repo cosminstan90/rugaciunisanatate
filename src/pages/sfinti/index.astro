@@ -3,6 +3,7 @@ import { getEmDashCollection } from "emdash";
 import Base from "../../layouts/Base.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
 import SaintCard from "../../components/SaintCard.astro";
+import { ptToText } from "../../lib/ptToText";
 
 const { entries: saints } = await getEmDashCollection("sfinti", {
   orderBy: { name: "asc" },
@@ -50,10 +51,10 @@ const schema = [
       <div class="categories-grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">
         {saints.map((s) => (
           <SaintCard
-            name={s.data.name}
+            name={ptToText(s.data.name)}
             slug={s.data.slug ?? s.id}
-            type={s.data.saint_type}
-            feastDate={s.data.feast_date}
+            type={ptToText(s.data.saint_type)}
+            feastDate={ptToText(s.data.feast_date)}
             icon={s.data.icon ?? "✝️"}
           />
         ))}

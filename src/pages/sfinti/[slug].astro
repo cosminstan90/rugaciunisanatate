@@ -6,6 +6,7 @@ import Breadcrumb from "../../components/Breadcrumb.astro";
 import PrayerCard from "../../components/PrayerCard.astro";
 import ShareButtons from "../../components/ShareButtons.astro";
 import AdSense from "../../components/AdSense.astro";
+import { ptToText } from "../../lib/ptToText";
 
 const slug = decodeSlug(Astro.params.slug);
 if (!slug) return Astro.redirect("/404");
@@ -27,16 +28,17 @@ const { entries: saintPrayers } = await getEmDashCollection("rugaciuni", {
   limit: 12,
 });
 
+const saintName = ptToText(saint.data.name);
+const saintFeastDate = ptToText(saint.data.feast_date);
+
 const schema = [
   {
     "@type": "Person",
     "@id": `${pageUrl}#saint`,
-    name: saint.data.name,
+    name: saintName,
     description: seo.description,
     url: pageUrl,
-    ...(saint.data.feast_date && {
-      birthDate: saint.data.feast_date,
-    }),
+    ...(saintFeastDate && { birthDate: saintFeastDate }),
     additionalType: "https://schema.org/Person",
   },
   {
@@ -44,22 +46,22 @@ const schema = [
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Acasă", item: siteUrl },
       { "@type": "ListItem", position: 2, name: "Sfinți", item: `${siteUrl}/sfinti` },
-      { "@type": "ListItem", position: 3, name: saint.data.name, item: pageUrl },
+      { "@type": "ListItem", position: 3, name: saintName, item: pageUrl },
     ],
   },
 ];
 
-const todayFeasting = saint.data.feast_date
+const todayFeasting = saintFeastDate
   ? (() => {
       const today = new Date();
-      const [d, m] = (saint.data.feast_date as string).split(" ");
+      const d = saintFeastDate.split(" ")[0];
       return today.getDate() === parseInt(d);
     })()
   : false;
 ---
 
 <Base
-  title={`${saint.data.name} — Rugăciuni și Acatist`}
+  title={`${saintName} — Rugăciuni și Acatist`}
   description={seo.description}
   canonical={pageUrl}
   schema={schema}
@@ -72,30 +74,30 @@ const todayFeasting = saint.data.feast_date
         {saint.data.icon ?? "✝️"}
       </div>
       <div class="saint-hero-info">
-        {saint.data.saint_type && (
-          <div class="saint-type-badge">✦ {saint.data.saint_type}</div>
+        {ptToText(saint.data.saint_type) && (
+          <div class="saint-type-badge">✦ {ptToText(saint.data.saint_type)}</div>
         )}
-        <h1 class="saint-hero-name">{saint.data.name}</h1>
-        {saint.data.subtitle && (
-          <p class="saint-hero-subtitle">{saint.data.subtitle}</p>
+        <h1 class="saint-hero-name">{saintName}</h1>
+        {ptToText(saint.data.subtitle) && (
+          <p class="saint-hero-subtitle">{ptToText(saint.data.subtitle)}</p>
         )}
         <div class="saint-meta-row">
-          {saint.data.feast_date && (
+          {saintFeastDate && (
             <div class="saint-meta-item">
               <span class="saint-meta-label">Prăznuit</span>
-              <span class="saint-meta-val">{saint.data.feast_date}</span>
+              <span class="saint-meta-val">{saintFeastDate}</span>
             </div>
           )}
-          {saint.data.life_dates && (
+          {ptToText(saint.data.life_dates) && (
             <div class="saint-meta-item">
               <span class="saint-meta-label">Viața</span>
-              <span class="saint-meta-val">{saint.data.life_dates}</span>
+              <span class="saint-meta-val">{ptToText(saint.data.life_dates)}</span>
             </div>
           )}
-          {saint.data.patron_of && (
+          {ptToText(saint.data.patron_of) && (
             <div class="saint-meta-item">
               <span class="saint-meta-label">Patron</span>
-              <span class="saint-meta-val">{saint.data.patron_of}</span>
+              <span class="saint-meta-val">{ptToText(saint.data.patron_of)}</span>
             </div>
           )}
         </div>
@@ -109,12 +111,12 @@ const todayFeasting = saint.data.feast_date
     </div>
   </div>
 
-  {todayFeasting && saint.data.feast_date && (
+  {todayFeasting && saintFeastDate && (
     <div class="feast-strip">
       <div class="feast-strip-inner">
-        <span class="feast-strip-date">{saint.data.feast_date}</span>
+        <span class="feast-strip-date">{saintFeastDate}</span>
         <span class="feast-strip-sep">·</span>
-        <span class="feast-strip-info">Astăzi este ziua de prăznuire a {saint.data.name}</span>
+        <span class="feast-strip-info">Astăzi este ziua de prăznuire a {saintName}</span>
       </div>
     </div>
   )}
@@ -122,7 +124,7 @@ const todayFeasting = saint.data.feast_date
   <Breadcrumb
     crumbs={[
       { label: "Sfinți", href: "/sfinti" },
-      { label: saint.data.name },
+      { label: saintName },
     ]}
   />
 
@@ -143,19 +145,19 @@ const todayFeasting = saint.data.feast_date
           <div class="prayers-grid">
             {saintPrayers.map((p) => (
               <PrayerCard
-                title={p.data.title}
+                title={ptToText(p.data.title)}
                 slug={p.data.slug ?? p.id}
-                excerpt={p.data.excerpt}
-                category={p.data.category}
+                excerpt={ptToText(p.data.excerpt)}
+                category={ptToText(p.data.category)}
                 readingTime={p.data.reading_time}
-                hasAudio={!!p.data.audio_url}
+                hasAudio={!!ptToText(p.data.audio_url)}
               />
             ))}
           </div>
         </div>
       )}
 
-      <ShareButtons url={pageUrl} title={saint.data.name} />
+      <ShareButtons url={pageUrl} title={saintName} />
     </main>
 
     <aside>

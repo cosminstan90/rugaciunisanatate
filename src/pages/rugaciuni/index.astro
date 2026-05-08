@@ -4,6 +4,7 @@ import Base from "../../layouts/Base.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
 import PrayerCard from "../../components/PrayerCard.astro";
 import AdSense from "../../components/AdSense.astro";
+import { ptToText } from "../../lib/ptToText";
 
 const url = Astro.url;
 const q = url.searchParams.get("q") ?? "";
@@ -27,8 +28,8 @@ const { entries: allPrayers } = await getEmDashCollection("rugaciuni", {
 
 const filtered = q
   ? allPrayers.filter((p) =>
-      p.data.title.toLowerCase().includes(q.toLowerCase()) ||
-      (p.data.excerpt ?? "").toLowerCase().includes(q.toLowerCase())
+      ptToText(p.data.title).toLowerCase().includes(q.toLowerCase()) ||
+      ptToText(p.data.excerpt).toLowerCase().includes(q.toLowerCase())
     )
   : allPrayers;
 
@@ -38,12 +39,12 @@ const prayers = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
 const categories = [
   { slug: "all", name: "Toate", count: allPrayers.length },
-  { slug: "vindecare", name: "Vindecare", count: allPrayers.filter((p) => p.data.category === "vindecare").length },
-  { slug: "dimineata", name: "Dimineață", count: allPrayers.filter((p) => p.data.category === "dimineata").length },
-  { slug: "seara", name: "Seară", count: allPrayers.filter((p) => p.data.category === "seara").length },
-  { slug: "psalmi", name: "Psalmi", count: allPrayers.filter((p) => p.data.category === "psalmi").length },
-  { slug: "familie", name: "Familie", count: allPrayers.filter((p) => p.data.category === "familie").length },
-  { slug: "ocazii", name: "Ocazii speciale", count: allPrayers.filter((p) => p.data.category === "ocazii").length },
+  { slug: "vindecare", name: "Vindecare", count: allPrayers.filter((p) => ptToText(p.data.category) === "vindecare").length },
+  { slug: "dimineata", name: "Dimineață", count: allPrayers.filter((p) => ptToText(p.data.category) === "dimineata").length },
+  { slug: "seara", name: "Seară", count: allPrayers.filter((p) => ptToText(p.data.category) === "seara").length },
+  { slug: "psalmi", name: "Psalmi", count: allPrayers.filter((p) => ptToText(p.data.category) === "psalmi").length },
+  { slug: "familie", name: "Familie", count: allPrayers.filter((p) => ptToText(p.data.category) === "familie").length },
+  { slug: "ocazii", name: "Ocazii speciale", count: allPrayers.filter((p) => ptToText(p.data.category) === "ocazii").length },
 ];
 
 const siteUrl = "https://rugaciunisanatate.ro";
@@ -147,12 +148,12 @@ const schema = [
         <div class="prayers-grid">
           {prayers.map((p) => (
             <PrayerCard
-              title={p.data.title}
+              title={ptToText(p.data.title)}
               slug={p.data.slug ?? p.id}
-              excerpt={p.data.excerpt}
-              category={p.data.category}
+              excerpt={ptToText(p.data.excerpt)}
+              category={ptToText(p.data.category)}
               readingTime={p.data.reading_time}
-              hasAudio={!!p.data.audio_url}
+              hasAudio={!!ptToText(p.data.audio_url)}
               publishedAt={p.data.published_at}
             />
           ))}

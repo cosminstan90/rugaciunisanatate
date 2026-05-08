@@ -1,9 +1,11 @@
 ---
 import { getEmDashEntry, getEmDashCollection, decodeSlug } from "emdash";
+import { PortableText } from "emdash/ui";
 import Base from "../../layouts/Base.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
 import PrayerCard from "../../components/PrayerCard.astro";
 import ArticleCard from "../../components/ArticleCard.astro";
+import { ptToText } from "../../lib/ptToText";
 
 const slug = decodeSlug(Astro.params.slug);
 if (!slug) return Astro.redirect("/404");
@@ -26,39 +28,42 @@ const [{ entries: prayers }, { entries: articles }] = await Promise.all([
 
 const siteUrl = "https://rugaciunisanatate.ro";
 const pageUrl = `${siteUrl}/autori/${slug}`;
-const initials = (author.data.name as string)
+const authorName = ptToText(author.data.name);
+const authorRole = ptToText(author.data.role);
+const authorBioText = ptToText(author.data.bio);
+const initials = authorName
   .split(" ")
   .map((w: string) => w[0])
   .join("")
   .slice(0, 2)
-  .toUpperCase();
+  .toUpperCase() || "RS";
 
 const schema = [
   {
     "@type": "Person",
     "@id": `${pageUrl}#person`,
-    name: author.data.name,
-    description: author.data.bio,
+    name: authorName,
+    description: authorBioText,
     url: pageUrl,
-    jobTitle: author.data.role,
+    jobTitle: authorRole,
   },
   {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Acasă", item: siteUrl },
-      { "@type": "ListItem", position: 2, name: author.data.name, item: pageUrl },
+      { "@type": "ListItem", position: 2, name: authorName, item: pageUrl },
     ],
   },
 ];
 ---
 
 <Base
-  title={`${author.data.name} — Autor Rugăciuni Sănătate`}
-  description={author.data.bio ?? `Rugăciuni și articole de ${author.data.name}`}
+  title={`${authorName} — Autor Rugăciuni Sănătate`}
+  description={authorBioText || `Rugăciuni și articole de ${authorName}`}
   canonical={pageUrl}
   schema={schema}
 >
-  <Breadcrumb crumbs={[{ label: author.data.name as string }]} />
+  <Breadcrumb crumbs={[{ label: authorName }]} />
 
   <div class="section-inner" style="max-width:800px;margin:0 auto;text-align:center;padding-top:56px">
     <div class="author-avatar-circle" style="width:80px;height:80px;margin:0 auto 20px;font-size:1.8rem">
@@ -66,15 +71,15 @@ const schema = [
       <div class="author-verified-badge" style="width:22px;height:22px;font-size:0.7rem">✓</div>
     </div>
     <h1 style="font-family:var(--font-display);font-size:2rem;font-weight:600;color:var(--dark);margin-bottom:8px">
-      {author.data.name}
+      {authorName}
     </h1>
-    {author.data.role && (
-      <div style="font-size:0.9rem;color:var(--text-light);margin-bottom:16px">{author.data.role}</div>
+    {authorRole && (
+      <div style="font-size:0.9rem;color:var(--text-light);margin-bottom:16px">{authorRole}</div>
     )}
     {author.data.bio && (
-      <p style="font-size:1rem;line-height:1.8;color:var(--text);max-width:560px;margin:0 auto">
-        {author.data.bio}
-      </p>
+      <div style="font-size:1rem;line-height:1.8;color:var(--text);max-width:560px;margin:0 auto">
+        <PortableText value={author.data.bio} />
+      </div>
     )}
     <div style="display:flex;gap:20px;justify-content:center;margin-top:20px">
       <div style="text-align:center">
@@ -94,12 +99,12 @@ const schema = [
       <div class="prayers-grid">
         {prayers.map((p) => (
           <PrayerCard
-            title={p.data.title}
+            title={ptToText(p.data.title)}
             slug={p.data.slug ?? p.id}
-            excerpt={p.data.excerpt}
-            category={p.data.category}
+            excerpt={ptToText(p.data.excerpt)}
+            category={ptToText(p.data.category)}
             readingTime={p.data.reading_time}
-            hasAudio={!!p.data.audio_url}
+            hasAudio={!!ptToText(p.data.audio_url)}
           />
         ))}
       </div>
@@ -112,10 +117,10 @@ const schema = [
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px">
         {articles.map((a) => (
           <ArticleCard
-            title={a.data.title}
+            title={ptToText(a.data.title)}
             slug={a.data.slug ?? a.id}
-            excerpt={a.data.excerpt}
-            category={a.data.category}
+            excerpt={ptToText(a.data.excerpt)}
+            category={ptToText(a.data.category)}
             readingTime={a.data.reading_time}
             publishedAt={a.data.published_at}
           />

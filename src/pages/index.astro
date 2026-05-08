@@ -5,6 +5,7 @@ import PrayerCard from "../components/PrayerCard.astro";
 import ArticleCard from "../components/ArticleCard.astro";
 import AdSense from "../components/AdSense.astro";
 import { getZiCalendar, getSfintiiZilei } from "../data/calendar-ortodox";
+import { ptToText } from "../lib/ptToText";
 
 const today = new Date();
 const ziCalendar = getZiCalendar(today);
@@ -161,12 +162,12 @@ const schema = [
       <div class="prayers-grid">
         {latestPrayers.map((p) => (
           <PrayerCard
-            title={p.data.title}
+            title={ptToText(p.data.title)}
             slug={p.data.slug ?? p.id}
-            excerpt={p.data.excerpt}
-            category={p.data.category}
+            excerpt={ptToText(p.data.excerpt)}
+            category={ptToText(p.data.category)}
             readingTime={p.data.reading_time}
-            hasAudio={!!p.data.audio_url}
+            hasAudio={!!ptToText(p.data.audio_url)}
             publishedAt={p.data.published_at}
           />
         ))}
@@ -189,10 +190,10 @@ const schema = [
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px">
         {featuredArticles.map((a) => (
           <ArticleCard
-            title={a.data.title}
+            title={ptToText(a.data.title)}
             slug={a.data.slug ?? a.id}
-            excerpt={a.data.excerpt}
-            category={a.data.category}
+            excerpt={ptToText(a.data.excerpt)}
+            category={ptToText(a.data.category)}
             readingTime={a.data.reading_time}
             publishedAt={a.data.published_at}
           />
