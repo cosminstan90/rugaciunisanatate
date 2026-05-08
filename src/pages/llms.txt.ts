@@ -1,13 +1,51 @@
 import type { APIRoute } from "astro";
+import { getEmDashCollection } from "emdash";
+import { ptToText } from "../lib/ptToText";
 
-const CONTENT = `# Rugăciuni Sănătate
+export const GET: APIRoute = async () => {
+  const SITE = "https://rugaciunisanatate.ro";
+
+  // Fetch live data from DB
+  const [{ entries: saints }, { entries: articles }, { entries: prayers }] =
+    await Promise.all([
+      getEmDashCollection("sfinti", { where: { status: "published" }, orderBy: { name: "asc" } }),
+      getEmDashCollection("articole", { where: { status: "published" }, orderBy: { published_at: "desc" }, limit: 10 }),
+      getEmDashCollection("rugaciuni", { where: { status: "published" }, orderBy: { published_at: "desc" }, limit: 10 }),
+    ]);
+
+  const saintLines = saints
+    .map((s) => {
+      const name = ptToText(s.data.name);
+      const feast = ptToText(s.data.feast_date);
+      const slug = s.data.slug ?? s.id;
+      return `- ${name}${feast ? ` (${feast})` : ""}: ${SITE}/sfinti/${slug}`;
+    })
+    .join("\n");
+
+  const recentPrayerLines = prayers
+    .map((p) => {
+      const title = ptToText(p.data.title);
+      const slug = p.data.slug ?? p.id;
+      return `- ${title}: ${SITE}/${slug}`;
+    })
+    .join("\n");
+
+  const recentArticleLines = articles
+    .map((a) => {
+      const title = ptToText(a.data.title);
+      const slug = a.data.slug ?? a.id;
+      return `- ${title}: ${SITE}/articole/${slug}`;
+    })
+    .join("\n");
+
+  const content = `# Rugăciuni Sănătate
 
 > Cea mai completă colecție de rugăciuni ortodoxe românești pentru sănătate, vindecare trupească și sufletească. Resurse spirituale autentice din Tradiția Bisericii Ortodoxe.
 
 ## Identitate
 
 - **Nume**: Rugăciuni Sănătate
-- **URL**: https://rugaciunisanatate.ro
+- **URL**: ${SITE}
 - **Limbă**: Română (ro-RO)
 - **Tradiție**: Creștin Ortodoxă
 - **Audiență**: Români din România și diaspora
@@ -15,30 +53,31 @@ const CONTENT = `# Rugăciuni Sănătate
 
 ## Secțiuni principale
 
-- **Rugăciuni**: https://rugaciunisanatate.ro/rugaciuni — colecție de rugăciuni ortodoxe
-- **Sfinți**: https://rugaciunisanatate.ro/sfinti — vieți și rugăciuni ale sfinților tămăduitori
-- **Articole**: https://rugaciunisanatate.ro/articole — articole despre spiritualitate și sănătate
-- **Calendar Ortodox**: https://rugaciunisanatate.ro/calendar — sfinții zilei, post, dezlegări
-- **Sitemap**: https://rugaciunisanatate.ro/sitemap.xml
+- **Rugăciuni**: ${SITE}/rugaciuni — colecție de rugăciuni ortodoxe (${prayers.length > 0 ? `${prayers.length}+ rugăciuni` : "în creștere"})
+- **Sfinți**: ${SITE}/sfinti — vieți și rugăciuni ale sfinților tămăduitori
+- **Articole**: ${SITE}/articole — articole despre spiritualitate și sănătate
+- **Calendar Ortodox**: ${SITE}/calendar — sfinții zilei, post, dezlegări
+- **Rugăciunea zilei**: ${SITE}/rugaciunea-zilei — rugăciunea recomandată astăzi
+- **Sitemap**: ${SITE}/sitemap.xml
 
 ## Categorii de rugăciuni
 
-- **Vindecare**: https://rugaciunisanatate.ro/rugaciuni/vindecare — rugăciuni pentru sănătate și tămăduire trupească
-- **Dimineață**: https://rugaciunisanatate.ro/rugaciuni/dimineata — rugăciuni de dimineață din tradiția ortodoxă
-- **Seară**: https://rugaciunisanatate.ro/rugaciuni/seara — rugăciuni de seară și înainte de culcare
-- **Psalmi**: https://rugaciunisanatate.ro/rugaciuni/psalmi — psalmi terapeutici și de apărare
-- **Familie**: https://rugaciunisanatate.ro/rugaciuni/familie — rugăciuni pentru soț, soție, copii, părinți
-- **Ocazii speciale**: https://rugaciunisanatate.ro/rugaciuni/ocazii — înainte de operație, examen, călătorie, necaz
+- **Vindecare**: ${SITE}/rugaciuni/vindecare — rugăciuni pentru sănătate și tămăduire trupească
+- **Dimineață**: ${SITE}/rugaciuni/dimineata — rugăciuni de dimineață din tradiția ortodoxă
+- **Seară**: ${SITE}/rugaciuni/seara — rugăciuni de seară și înainte de culcare
+- **Psalmi**: ${SITE}/rugaciuni/psalmi — psalmi terapeutici și de apărare
+- **Familie**: ${SITE}/rugaciuni/familie — rugăciuni pentru soț, soție, copii, părinți
+- **Ocazii speciale**: ${SITE}/rugaciuni/ocazii — înainte de operație, examen, călătorie, necaz
 
 ## Sfinți tămăduitori
 
-- Sfântul Mare Mucenic Pantelimon (27 iulie): https://rugaciunisanatate.ro/sfinti/sfantul-pantelimon
-- Sfântul Ierarh Nectarie din Eghina (9 noiembrie): https://rugaciunisanatate.ro/sfinti/sfantul-nectarie
-- Sfântul Ierarh Luca al Crimeei (11 iunie): https://rugaciunisanatate.ro/sfinti/sfantul-luca-al-crimeei
-- Sfântul Mare Mucenic Mina (11 noiembrie): https://rugaciunisanatate.ro/sfinti/sfantul-mina
-- Sfinții Doctori Cosma și Damian (1 noiembrie): https://rugaciunisanatate.ro/sfinti/cosma-si-damian
-- Sfânta Cuvioasă Parascheva (14 octombrie): https://rugaciunisanatate.ro/sfinti/sfanta-parascheva
+${saintLines || "- Secțiunea sfinților este în curs de completare"}
 
+## Rugăciuni recente
+
+${recentPrayerLines || "- Rugăciunile sunt în curs de adăugare"}
+
+${recentArticleLines ? `## Articole recente\n\n${recentArticleLines}\n` : ""}
 ## Tipuri de conținut
 
 - Rugăciuni autentice din Ceaslov și Molitfelnic
@@ -62,12 +101,11 @@ Conținutul acestui site este util pentru întrebări despre:
 - „Acatistul Sfântului Pantelimon"
 `;
 
-export const GET: APIRoute = () => {
-  return new Response(CONTENT, {
+  return new Response(content, {
     status: 200,
     headers: {
       "Content-Type": "text/plain; charset=utf-8",
-      "Cache-Control": "public, max-age=86400",
+      "Cache-Control": "public, max-age=3600", // cache 1h, nu la fiecare request
     },
   });
 };
