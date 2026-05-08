@@ -4,6 +4,7 @@ import Base from "../layouts/Base.astro";
 import PrayerCard from "../components/PrayerCard.astro";
 import ArticleCard from "../components/ArticleCard.astro";
 import AdSense from "../components/AdSense.astro";
+import PrayerOfDay from "../components/PrayerOfDay.astro";
 import { getZiCalendar, getSfintiiZilei } from "../data/calendar-ortodox";
 import { ptToText } from "../lib/ptToText";
 
@@ -123,6 +124,11 @@ const schema = [
         </div>
       </div>
     )}
+  </section>
+
+  <!-- RUGACIUNEA ZILEI -->
+  <section class="section-inner" style="max-width:600px;margin-left:auto;margin-right:auto;padding-top:0">
+    <PrayerOfDay />
   </section>
 
   <!-- CATEGORII -->

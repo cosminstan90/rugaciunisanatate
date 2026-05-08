@@ -1,0 +1,108 @@
+---
+import { getEmDashCollection } from "emdash";
+import { PortableText } from "emdash/ui";
+import Base from "../layouts/Base.astro";
+import Breadcrumb from "../components/Breadcrumb.astro";
+import ShareButtons from "../components/ShareButtons.astro";
+import { ptToText } from "../lib/ptToText";
+
+const today = new Date();
+const start = new Date(today.getFullYear(), 0, 0);
+const dayOfYear = Math.floor((today.getTime() - start.getTime()) / 86400000);
+
+const { entries: prayers } = await getEmDashCollection("rugaciuni", {
+  where: { status: "published" },
+  orderBy: { published_at: "asc" },
+});
+
+const prayer = prayers.length > 0 ? prayers[dayOfYear % prayers.length] : null;
+const slug = prayer?.data.slug ?? prayer?.id ?? "";
+const title = prayer ? ptToText(prayer.data.title) : "Rugăciunea zilei";
+const excerpt = prayer ? ptToText(prayer.data.excerpt) : "";
+const category = prayer ? ptToText(prayer.data.category) : "";
+
+const siteUrl = "https://rugaciunisanatate.ro";
+const pageUrl = `${siteUrl}/rugaciunea-zilei`;
+const todayFormatted = today.toLocaleDateString("ro-RO", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+
+const schema = [
+  {
+    "@type": "WebPage",
+    "@id": `${pageUrl}#page`,
+    url: pageUrl,
+    name: `Rugăciunea zilei — ${todayFormatted}`,
+    description: `Rugăciunea ortodoxă a zilei de astăzi: ${title}`,
+    inLanguage: "ro-RO",
+    isPartOf: { "@id": `${siteUrl}/#website` },
+    datePublished: today.toISOString().split("T")[0],
+  },
+  {
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Acasă", item: siteUrl },
+      { "@type": "ListItem", position: 2, name: "Rugăciunea zilei", item: pageUrl },
+    ],
+  },
+];
+---
+
+<Base
+  title={`Rugăciunea zilei — ${todayFormatted}`}
+  description={`Rugăciunea ortodoxă a zilei de astăzi: ${title}. ${excerpt.slice(0, 100)}`}
+  canonical={pageUrl}
+  ogType="article"
+  schema={schema}
+>
+  <Breadcrumb crumbs={[{ label: "Rugăciunea zilei" }]} />
+
+  <div class="section-inner" style="max-width:720px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:40px">
+      <div class="section-label">✦ {todayFormatted} ✦</div>
+      <h1 class="section-title">Rugăciunea <em>zilei de astăzi</em></h1>
+      {category && (
+        <div style="font-size:0.8rem;color:var(--text-light);text-transform:uppercase;letter-spacing:0.1em;margin-top:8px">{category}</div>
+      )}
+    </div>
+
+    {prayer ? (
+      <div style="background:var(--parchment-dark);border:1px solid rgba(196,151,58,0.2);border-radius:var(--radius);padding:40px">
+        <h2 style="font-family:var(--font-display);font-size:1.6rem;font-weight:600;color:var(--dark);margin-bottom:24px;text-align:center">
+          {title}
+        </h2>
+        <div style="font-size:1rem;line-height:2;color:var(--text)">
+          {prayer.data.content
+            ? <PortableText value={prayer.data.content} />
+            : <p style="color:var(--text-light);font-style:italic">Conținut în curs de adăugare...</p>
+          }
+        </div>
+        <div style="margin-top:32px;padding-top:24px;border-top:1px solid rgba(196,151,58,0.15);text-align:center">
+          <a href={`/${slug}`} style="font-family:var(--font-display);font-size:0.9rem;color:var(--crimson);text-decoration:none">
+            Pagina completă a rugăciunii →
+          </a>
+        </div>
+      </div>
+    ) : (
+      <div style="text-align:center;padding:60px 20px;color:var(--text-light)">
+        <div style="font-size:3rem;margin-bottom:16px">🕯️</div>
+        <p>Rugăciunea zilei va fi disponibilă în curând.</p>
+      </div>
+    )}
+
+    <div style="margin-top:32px">
+      <ShareButtons url={pageUrl} title={`Rugăciunea zilei: ${title}`} />
+    </div>
+
+    <!-- Widget embed info -->
+    <div style="margin-top:48px;padding:24px;background:var(--parchment-dark);border:1px solid rgba(196,151,58,0.15);border-radius:var(--radius)">
+      <div style="font-family:var(--font-display);font-size:0.85rem;font-weight:600;color:var(--dark);margin-bottom:12px">
+        📎 Adaugă rugăciunea zilei pe site-ul tău
+      </div>
+      <p style="font-size:0.82rem;color:var(--text-light);margin-bottom:12px">
+        Copiază codul de mai jos pentru a afișa rugăciunea zilei pe blogul sau site-ul tău:
+      </p>
+      <code style="display:block;background:var(--dark);color:#c4973a;padding:12px;border-radius:4px;font-size:0.78rem;word-break:break-all">
+        {`<a href="https://rugaciunisanatate.ro/rugaciunea-zilei" target="_blank" rel="noopener">Rugăciunea zilei — rugaciunisanatate.ro</a>`}
+      </code>
+    </div>
+  </div>
+</Base>

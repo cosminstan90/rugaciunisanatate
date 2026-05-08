@@ -1,0 +1,155 @@
+---
+import { getEmDashEntry, decodeSlug } from "emdash";
+import { PortableText } from "emdash/ui";
+import Base from "../../../layouts/Base.astro";
+import Breadcrumb from "../../../components/Breadcrumb.astro";
+import { ptToText } from "../../../lib/ptToText";
+
+const { judet, slug } = Astro.params;
+if (!judet || !slug) return Astro.redirect("/biserici");
+
+const decodedSlug = decodeSlug(slug);
+if (!decodedSlug) return Astro.redirect("/biserici");
+
+const { entry: church } = await getEmDashEntry("biserici", decodedSlug).catch(() => ({ entry: null }));
+if (!church) return Astro.redirect(`/biserici/${judet}`);
+
+const siteUrl = "https://rugaciunisanatate.ro";
+const pageUrl = `${siteUrl}/biserici/${judet}/${slug}`;
+const churchName = church.data.name || "Biserică ortodoxă";
+const countyName = church.data.county || judet;
+
+const schema: object[] = [
+  {
+    "@type": "Church",
+    "@id": `${pageUrl}#church`,
+    name: churchName,
+    url: pageUrl,
+    ...(church.data.address && {
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: church.data.address,
+        addressLocality: church.data.city || "",
+        addressRegion: countyName,
+        addressCountry: "RO",
+      },
+    }),
+    ...(church.data.phone && { telephone: church.data.phone }),
+    ...(church.data.email && { email: church.data.email }),
+    ...(church.data.website && { sameAs: church.data.website }),
+    ...(church.data.lat && church.data.lng && {
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: church.data.lat,
+        longitude: church.data.lng,
+      },
+    }),
+    ...(church.data.schedule && { openingHoursSpecification: church.data.schedule }),
+  },
+  {
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Acasă", item: siteUrl },
+      { "@type": "ListItem", position: 2, name: "Biserici", item: `${siteUrl}/biserici` },
+      { "@type": "ListItem", position: 3, name: countyName, item: `${siteUrl}/biserici/${judet}` },
+      { "@type": "ListItem", position: 4, name: churchName, item: pageUrl },
+    ],
+  },
+];
+---
+
+<Base
+  title={`${churchName} — ${church.data.city || countyName}`}
+  description={`${churchName} din ${church.data.city || countyName}. Adresă, telefon, program liturghii și informații de contact.`}
+  canonical={pageUrl}
+  schema={schema}
+>
+  <Breadcrumb crumbs={[
+    { label: "Biserici", href: "/biserici" },
+    { label: countyName, href: `/biserici/${judet}` },
+    { label: churchName },
+  ]} />
+
+  <div class="page-body">
+    <main>
+      <h1 style="font-family:var(--font-display);font-size:clamp(1.6rem,4vw,2.2rem);font-weight:600;color:var(--dark);margin-bottom:24px">
+        ⛪ {churchName}
+      </h1>
+
+      {church.data.photo_url && (
+        <img src={church.data.photo_url} alt={churchName} style="width:100%;max-height:320px;object-fit:cover;border-radius:var(--radius);margin-bottom:28px" />
+      )}
+
+      <!-- Contact info grid -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:32px">
+        {church.data.address && (
+          <div style="background:var(--parchment-dark);border-radius:var(--radius);padding:16px">
+            <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold);margin-bottom:6px">📍 Adresă</div>
+            <div style="font-size:0.9rem;color:var(--dark)">{church.data.address}{church.data.city && `, ${church.data.city}`}</div>
+          </div>
+        )}
+        {church.data.phone && (
+          <div style="background:var(--parchment-dark);border-radius:var(--radius);padding:16px">
+            <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold);margin-bottom:6px">📞 Telefon</div>
+            <a href={`tel:${church.data.phone}`} style="font-size:0.9rem;color:var(--crimson);text-decoration:none">{church.data.phone}</a>
+          </div>
+        )}
+        {church.data.schedule && (
+          <div style="background:var(--parchment-dark);border-radius:var(--radius);padding:16px">
+            <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold);margin-bottom:6px">🕐 Program</div>
+            <div style="font-size:0.85rem;color:var(--dark);white-space:pre-line">{church.data.schedule}</div>
+          </div>
+        )}
+        {church.data.priest_name && (
+          <div style="background:var(--parchment-dark);border-radius:var(--radius);padding:16px">
+            <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold);margin-bottom:6px">✝️ Preot paroh</div>
+            <div style="font-size:0.9rem;color:var(--dark)">{church.data.priest_name}</div>
+          </div>
+        )}
+      </div>
+
+      {church.data.description && (
+        <div style="font-size:1rem;line-height:1.85;color:var(--text);margin-bottom:32px">
+          <PortableText value={church.data.description} />
+        </div>
+      )}
+
+      {church.data.google_maps_url && (
+        <div style="margin-bottom:32px">
+          <div class="section-label" style="margin-bottom:12px">📍 Localizare pe hartă</div>
+          <a href={church.data.google_maps_url} target="_blank" rel="noopener noreferrer" class="btn-outline">
+            Deschide în Google Maps →
+          </a>
+        </div>
+      )}
+
+      {church.data.patron_saint_slug && (
+        <div style="background:var(--parchment-dark);border:1px solid rgba(196,151,58,0.2);border-radius:var(--radius);padding:20px;margin-bottom:32px">
+          <div class="section-label" style="margin-bottom:8px">✦ Sfânt patron</div>
+          <a href={`/sfinti/${church.data.patron_saint_slug}`} style="font-family:var(--font-display);font-size:1rem;color:var(--crimson);text-decoration:none">
+            Rugăciunile sfântului patron →
+          </a>
+        </div>
+      )}
+    </main>
+
+    <aside>
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">✦ Contact</div>
+        <ul class="sidebar-list">
+          {church.data.email && <li><a href={`mailto:${church.data.email}`}>{church.data.email}</a></li>}
+          {church.data.website && <li><a href={church.data.website} target="_blank" rel="noopener">Website oficial</a></li>}
+          {church.data.google_maps_url && <li><a href={church.data.google_maps_url} target="_blank" rel="noopener">Google Maps</a></li>}
+        </ul>
+      </div>
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">✦ Rugăciuni</div>
+        <ul class="sidebar-list">
+          <li><a href="/rugaciuni?cat=dimineata">Rugăciuni de dimineață</a></li>
+          <li><a href="/rugaciuni?cat=seara">Rugăciuni de seară</a></li>
+          <li><a href="/rugaciuni?cat=vindecare">Rugăciuni de vindecare</a></li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</Base>

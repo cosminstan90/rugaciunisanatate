@@ -1,0 +1,92 @@
+---
+import { getEmDashCollection } from "emdash";
+import Base from "../../layouts/Base.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+
+const siteUrl = "https://rugaciunisanatate.ro";
+
+// Fetch all published churches
+const { entries: churches } = await getEmDashCollection("biserici", {
+  where: { status: "published" },
+  orderBy: { county: "asc" },
+}).catch(() => ({ entries: [] as any[] }));
+
+// Group by county
+const byCounty: Record<string, typeof churches> = {};
+for (const c of churches) {
+  const county = c.data.county || "Necunoscut";
+  if (!byCounty[county]) byCounty[county] = [];
+  byCounty[county].push(c);
+}
+const counties = Object.keys(byCounty).sort();
+
+const schema = [
+  {
+    "@type": "CollectionPage",
+    "@id": `${siteUrl}/biserici#page`,
+    url: `${siteUrl}/biserici`,
+    name: "Director Biserici Ortodoxe din România",
+    description: "Cel mai complet director de biserici ortodoxe din România cu informații de contact, program liturghii și localizare pe hartă.",
+    inLanguage: "ro-RO",
+  },
+  {
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Acasă", item: siteUrl },
+      { "@type": "ListItem", position: 2, name: "Biserici Ortodoxe", item: `${siteUrl}/biserici` },
+    ],
+  },
+];
+---
+
+<Base
+  title="Director Biserici Ortodoxe din România — Rugăciuni Sănătate"
+  description="Găsește o biserică ortodoxă în apropierea ta. Director complet cu adrese, telefoane, program liturghii și hartă."
+  canonical={`${siteUrl}/biserici`}
+  schema={schema}
+  activeNav="biserici"
+>
+  <div class="catalog-hero">
+    <div class="catalog-hero-inner">
+      <div class="catalog-hero-label">✦ Director național ✦</div>
+      <h1 class="catalog-hero-title">Biserici <em>ortodoxe</em></h1>
+      <p style="color:rgba(255,255,255,0.7);margin-top:8px;font-size:1rem">
+        Găsește o biserică în apropierea ta — program, contact, hartă
+      </p>
+    </div>
+  </div>
+
+  <Breadcrumb crumbs={[{ label: "Biserici ortodoxe" }]} />
+
+  <div class="section-inner">
+    {counties.length > 0 ? (
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px">
+        {counties.map((county) => {
+          const countySlug = byCounty[county]?.[0]?.data.county_slug || county.toLowerCase().replace(/\s+/g, "-");
+          return (
+            <a href={`/biserici/${countySlug}`} style="display:block;background:var(--white);border:1px solid rgba(196,151,58,0.2);border-top:2px solid var(--gold);border-radius:var(--radius);padding:20px;text-decoration:none;transition:box-shadow 0.2s" class="hover-card">
+              <div style="font-family:var(--font-display);font-size:1rem;font-weight:600;color:var(--dark);margin-bottom:6px">
+                ⛪ {county}
+              </div>
+              <div style="font-size:0.82rem;color:var(--text-light)">
+                {byCounty[county]?.length} {byCounty[county]?.length === 1 ? "biserică" : "biserici"}
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    ) : (
+      <div style="text-align:center;padding:80px 20px">
+        <div style="font-size:4rem;margin-bottom:20px">⛪</div>
+        <h2 style="font-family:var(--font-display);font-size:1.4rem;color:var(--dark);margin-bottom:12px">
+          Directorul se construiește
+        </h2>
+        <p style="color:var(--text-light);max-width:480px;margin:0 auto 24px">
+          Adăugăm zilnic biserici ortodoxe din toată România.
+          Dacă dorești să adaugi parohia ta, contactează-ne.
+        </p>
+        <a href="/contact" class="btn-outline">Adaugă o biserică</a>
+      </div>
+    )}
+  </div>
+</Base>

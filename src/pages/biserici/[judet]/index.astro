@@ -1,0 +1,75 @@
+---
+import { getEmDashCollection } from "emdash";
+import Base from "../../../layouts/Base.astro";
+import Breadcrumb from "../../../components/Breadcrumb.astro";
+
+const { judet } = Astro.params;
+if (!judet) return Astro.redirect("/biserici");
+
+const siteUrl = "https://rugaciunisanatate.ro";
+
+const { entries: churches } = await getEmDashCollection("biserici", {
+  where: { status: "published", county_slug: judet },
+  orderBy: { city: "asc" },
+}).catch(() => ({ entries: [] as any[] }));
+
+if (churches.length === 0) return Astro.redirect("/biserici");
+
+const countyName = churches[0]?.data.county || judet;
+const pageUrl = `${siteUrl}/biserici/${judet}`;
+
+const schema = [
+  {
+    "@type": "CollectionPage",
+    "@id": `${pageUrl}#page`,
+    url: pageUrl,
+    name: `Biserici ortodoxe din județul ${countyName}`,
+    description: `Director complet de biserici ortodoxe din județul ${countyName} cu adrese, telefoane și program liturghii.`,
+    inLanguage: "ro-RO",
+  },
+  {
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Acasă", item: siteUrl },
+      { "@type": "ListItem", position: 2, name: "Biserici", item: `${siteUrl}/biserici` },
+      { "@type": "ListItem", position: 3, name: countyName, item: pageUrl },
+    ],
+  },
+];
+---
+
+<Base
+  title={`Biserici ortodoxe — Județul ${countyName}`}
+  description={`${churches.length} biserici ortodoxe din județul ${countyName}. Adrese, telefoane, program liturghii și hartă.`}
+  canonical={pageUrl}
+  schema={schema}
+>
+  <Breadcrumb crumbs={[
+    { label: "Biserici", href: "/biserici" },
+    { label: countyName },
+  ]} />
+
+  <div class="section-inner">
+    <div class="section-header" style="margin-bottom:32px">
+      <div class="section-label">✦ {countyName} ✦</div>
+      <h1 class="section-title">Biserici ortodoxe din <em>{countyName}</em></h1>
+      <p style="color:var(--text-light);margin-top:8px">{churches.length} {churches.length === 1 ? "biserică găsită" : "biserici găsite"}</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px">
+      {churches.map((c) => (
+        <a href={`/biserici/${judet}/${c.data.slug ?? c.id}`} style="display:block;background:var(--white);border:1px solid rgba(196,151,58,0.2);border-radius:var(--radius);padding:20px;text-decoration:none">
+          {c.data.photo_url && (
+            <img src={c.data.photo_url} alt={c.data.name} style="width:100%;height:140px;object-fit:cover;border-radius:4px;margin-bottom:12px" loading="lazy" />
+          )}
+          <div style="font-family:var(--font-display);font-size:1.05rem;font-weight:600;color:var(--dark);margin-bottom:6px">
+            ⛪ {c.data.name}
+          </div>
+          {c.data.city && <div style="font-size:0.82rem;color:var(--text-light);margin-bottom:4px">📍 {c.data.city}</div>}
+          {c.data.address && <div style="font-size:0.8rem;color:var(--text-light)">{c.data.address}</div>}
+          {c.data.phone && <div style="font-size:0.8rem;color:var(--crimson);margin-top:6px">📞 {c.data.phone}</div>}
+        </a>
+      ))}
+    </div>
+  </div>
+</Base>

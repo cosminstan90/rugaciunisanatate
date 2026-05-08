@@ -3,6 +3,8 @@ import Base from "../layouts/Base.astro";
 import Breadcrumb from "../components/Breadcrumb.astro";
 import AdSense from "../components/AdSense.astro";
 import { calendarOrtodox, getZiCalendar } from "../data/calendar-ortodox";
+import { getEmDashCollection } from "emdash";
+import { ptToText } from "../lib/ptToText";
 
 const url = Astro.url;
 const today = new Date();
@@ -50,6 +52,46 @@ const nextParam = `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).p
 // Today's saint info
 const todayZi = getZiCalendar(today);
 const siteUrl = "https://rugaciunisanatate.ro";
+
+// Fetch saints from DB and build feast date → slug map
+const { entries: sfinti } = await getEmDashCollection("sfinti", {
+  where: { status: "published" },
+}).catch(() => ({ entries: [] as any[] }));
+
+const LUNI_MAP: Record<string, string> = {
+  "ianuarie": "01", "februarie": "02", "martie": "03",
+  "aprilie": "04", "mai": "05", "iunie": "06",
+  "iulie": "07", "august": "08", "septembrie": "09",
+  "octombrie": "10", "noiembrie": "11", "decembrie": "12",
+};
+
+function parseFeastDate(feastDate: string): string | null {
+  const match = feastDate.toLowerCase().match(/(\d{1,2})\s+(\w+)/);
+  if (!match || !match[1] || !match[2]) return null;
+  const day = match[1].padStart(2, "0");
+  const month = LUNI_MAP[match[2]];
+  if (!month) return null;
+  return `${month}-${day}`;
+}
+
+// Map "MM-DD" → { slug, name }
+const saintByDate: Record<string, { slug: string; name: string }> = {};
+for (const s of sfinti) {
+  const feastRaw = ptToText(s.data.feast_date);
+  if (!feastRaw) continue;
+  const key = parseFeastDate(feastRaw);
+  if (key) {
+    saintByDate[key] = {
+      slug: s.data.slug ?? s.id,
+      name: ptToText(s.data.name),
+    };
+  }
+}
+
+// Today's saint page link
+const todayMm = String(today.getMonth() + 1).padStart(2, "0");
+const todayDd = String(today.getDate()).padStart(2, "0");
+const todaySaintPage = saintByDate[`${todayMm}-${todayDd}`];
 
 const schema = [
   {
@@ -120,7 +162,14 @@ const schema = [
                 {zi && (
                   <div class="day-saint">
                     {zi.post && <span class="day-post" title="Post"></span>}
-                    {zi.sfinti[0]}
+                    {(() => {
+                      const mmStr = String(month + 1).padStart(2, "0");
+                      const ddStr = String(day).padStart(2, "0");
+                      const saintPage = saintByDate[`${mmStr}-${ddStr}`];
+                      return saintPage
+                        ? <a href={`/sfinti/${saintPage.slug}`} style="color:inherit;text-decoration:none;border-bottom:1px dotted rgba(196,151,58,0.4)" title={`Pagina ${saintPage.name}`}>{zi.sfinti[0]}</a>
+                        : zi.sfinti[0];
+                    })()}
                   </div>
                 )}
               </div>
@@ -167,9 +216,15 @@ const schema = [
             ✦ Dezlegare la {todayZi.dezlegare}
           </div>
         )}
-        <a href="/rugaciuni?cat=vindecare" class="btn-primary" style="display:inline-flex;width:100%;justify-content:center;margin-top:8px">
-          Rugăciunile zilei →
-        </a>
+        {todaySaintPage ? (
+          <a href={`/sfinti/${todaySaintPage.slug}`} class="btn-primary" style="display:inline-flex;width:100%;justify-content:center;margin-top:8px">
+            Rugăciunile {todaySaintPage.name.replace("Sfântul ", "Sf. ").replace("Sfânta ", "Sf. ")} →
+          </a>
+        ) : (
+          <a href="/rugaciuni?cat=vindecare" class="btn-primary" style="display:inline-flex;width:100%;justify-content:center;margin-top:8px">
+            Rugăciunile zilei →
+          </a>
+        )}
       </div>
 
       <AdSense slot="0123456789" format="rectangle" class="ad-banner rect" />
