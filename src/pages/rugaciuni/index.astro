@@ -14,37 +14,38 @@ const sort = url.searchParams.get("sort") ?? "recent";
 const page = parseInt(url.searchParams.get("page") ?? "1");
 const PER_PAGE = 24;
 
-const whereClause: Record<string, unknown> = { status: "published" };
-if (cat && cat !== "all") whereClause.category = cat;
-if (tag) whereClause["tags.slug"] = tag;
+const whereFiltered: Record<string, unknown> = { status: "published" };
+if (cat && cat !== "all") whereFiltered.category = cat;
+if (tag) whereFiltered["tags.slug"] = tag;
 
 const orderBy: Record<string, "asc" | "desc"> =
   sort === "alpha" ? { title: "asc" } : { published_at: "desc" };
 
-const { entries: allPrayers } = await getEmDashCollection("rugaciuni", {
-  where: whereClause,
-  orderBy,
-});
+// Two parallel queries: filtered results + unfiltered for correct sidebar counts
+const [{ entries: filtered_raw }, { entries: allForCounts }] = await Promise.all([
+  getEmDashCollection("rugaciuni", { where: whereFiltered, orderBy }),
+  getEmDashCollection("rugaciuni", { where: { status: "published" } }),
+]);
 
 const filtered = q
-  ? allPrayers.filter((p) =>
+  ? filtered_raw.filter((p) =>
       ptToText(p.data.title).toLowerCase().includes(q.toLowerCase()) ||
       ptToText(p.data.excerpt).toLowerCase().includes(q.toLowerCase())
     )
-  : allPrayers;
+  : filtered_raw;
 
 const total = filtered.length;
 const totalPages = Math.ceil(total / PER_PAGE);
 const prayers = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
 const categories = [
-  { slug: "all", name: "Toate", count: allPrayers.length },
-  { slug: "vindecare", name: "Vindecare", count: allPrayers.filter((p) => ptToText(p.data.category) === "vindecare").length },
-  { slug: "dimineata", name: "Dimineață", count: allPrayers.filter((p) => ptToText(p.data.category) === "dimineata").length },
-  { slug: "seara", name: "Seară", count: allPrayers.filter((p) => ptToText(p.data.category) === "seara").length },
-  { slug: "psalmi", name: "Psalmi", count: allPrayers.filter((p) => ptToText(p.data.category) === "psalmi").length },
-  { slug: "familie", name: "Familie", count: allPrayers.filter((p) => ptToText(p.data.category) === "familie").length },
-  { slug: "ocazii", name: "Ocazii speciale", count: allPrayers.filter((p) => ptToText(p.data.category) === "ocazii").length },
+  { slug: "all", name: "Toate", count: allForCounts.length },
+  { slug: "vindecare", name: "Vindecare", count: allForCounts.filter((p) => ptToText(p.data.category) === "vindecare").length },
+  { slug: "dimineata", name: "Dimineață", count: allForCounts.filter((p) => ptToText(p.data.category) === "dimineata").length },
+  { slug: "seara", name: "Seară", count: allForCounts.filter((p) => ptToText(p.data.category) === "seara").length },
+  { slug: "psalmi", name: "Psalmi", count: allForCounts.filter((p) => ptToText(p.data.category) === "psalmi").length },
+  { slug: "familie", name: "Familie", count: allForCounts.filter((p) => ptToText(p.data.category) === "familie").length },
+  { slug: "ocazii", name: "Ocazii speciale", count: allForCounts.filter((p) => ptToText(p.data.category) === "ocazii").length },
 ];
 
 const siteUrl = "https://rugaciunisanatate.ro";
