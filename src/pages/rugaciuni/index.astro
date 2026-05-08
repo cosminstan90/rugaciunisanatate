@@ -110,7 +110,7 @@ const schema = [
         <div class="filter-list">
           {categories.map((c) => (
             <a
-              href={`/rugaciuni${c.slug !== "all" ? `?cat=${c.slug}` : ""}`}
+              href={c.slug !== "all" ? `/rugaciuni/${c.slug}` : "/rugaciuni"}
               class:list={["filter-item", cat === c.slug && "active"]}
             >
               <span class="filter-name">{c.name}</span>

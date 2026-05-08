@@ -82,7 +82,7 @@ const schema = [
       </div>
       <div class="hero-tags">
         {categories.map((c) => (
-          <a href={`/rugaciuni?cat=${c.slug}`} class="hero-tag">{c.name.replace("Rugăciuni de ", "").replace("Rugăciuni pentru ", "")}</a>
+          <a href={`/rugaciuni/${c.slug}`} class="hero-tag">{c.name.replace("Rugăciuni de ", "").replace("Rugăciuni pentru ", "")}</a>
         ))}
       </div>
     </div>
@@ -139,7 +139,7 @@ const schema = [
     </div>
     <div class="categories-grid">
       {categories.map((cat) => (
-        <a href={`/rugaciuni?cat=${cat.slug}`} class="cat-card">
+        <a href={`/rugaciuni/${cat.slug}`} class="cat-card">
           <div class="cat-icon">{cat.icon}</div>
           <div class="cat-name">{cat.name}</div>
           <div class="cat-desc">{cat.desc}</div>

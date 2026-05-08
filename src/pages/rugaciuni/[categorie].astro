@@ -1,0 +1,219 @@
+---
+import { getEmDashCollection } from "emdash";
+import Base from "../../layouts/Base.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import PrayerCard from "../../components/PrayerCard.astro";
+import AdSense from "../../components/AdSense.astro";
+import { ptToText } from "../../lib/ptToText";
+
+const CATEGORIES: Record<string, {
+  name: string;
+  title: string;
+  description: string;
+  intro: string;
+  icon: string;
+}> = {
+  vindecare: {
+    name: "Vindecare",
+    title: "Rugăciuni de vindecare — pentru sănătate trupească și sufletească",
+    description: "Colecție de rugăciuni ortodoxe pentru vindecare, sănătate și tămăduire trupească și sufletească. Rugăciuni autentice din Ceaslov și Molitfelnic.",
+    intro: "Rugăciunile de vindecare sunt dintre cele mai vechi și mai căutate rugăciuni din tradiția ortodoxă. Ele se adresează lui Dumnezeu și sfinților tămăduitori pentru sănătatea trupului și a sufletului.",
+    icon: "🙏",
+  },
+  dimineata: {
+    name: "Dimineață",
+    title: "Rugăciuni de dimineață — începe ziua cu rugăciunea",
+    description: "Rugăciuni ortodoxe de dimineață din Ceaslov. Sfințește începutul zilei cu rugăciunea de dimineață — izvor de pace, putere și binecuvântare.",
+    intro: "Rugăciunile de dimineață din tradiția ortodoxă pregătesc sufletul pentru ziua ce urmează, aducând pace, concentrare și conștiința prezenței lui Dumnezeu în fiecare clipă.",
+    icon: "🌅",
+  },
+  seara: {
+    name: "Seară",
+    title: "Rugăciuni de seară — închide ziua în pace cu Dumnezeu",
+    description: "Rugăciuni ortodoxe de seară și înainte de culcare. Mulțumire, pocăință și încredințarea nopții în mâinile lui Dumnezeu.",
+    intro: "Rugăciunile de seară din tradiția ortodoxă aduc mulțumire pentru ziua trecută, cer iertare pentru greșeli și încredințează somnul și noaptea ocrotirii divine.",
+    icon: "🌙",
+  },
+  psalmi: {
+    name: "Psalmi",
+    title: "Psalmi terapeutici — izvor de mângâiere și putere",
+    description: "Psalmii lui David pentru sănătate, apărare și mângâiere sufletească. Psalmul 22, 50, 90, 102 și alții din tradiția ortodoxă.",
+    intro: "Psalmii sunt rugăciunile inspirate ale Duhului Sfânt, izvor nesecat de mângâiere și putere pentru sufletul credincios. Tradiția ortodoxă recomandă citirea psalmilor în boală, în necaz și în orice moment al vieții.",
+    icon: "📖",
+  },
+  familie: {
+    name: "Familie",
+    title: "Rugăciuni pentru familie — soț, soție, copii, părinți",
+    description: "Rugăciuni ortodoxe pentru familie: pentru soț și soție, pentru copii, pentru părinți, pentru unitatea familiei și binecuvântarea căminului.",
+    intro: "Familia este biserica de acasă. Rugăciunile pentru familie cer binecuvântare, ocrotire și unitate pentru toți membrii familiei, de la copii la bătrâni.",
+    icon: "🏠",
+  },
+  ocazii: {
+    name: "Ocazii speciale",
+    title: "Rugăciuni pentru ocazii speciale — înainte de operație, examen, drum",
+    description: "Rugăciuni ortodoxe pentru situații speciale: înainte de operație, examen, călătorie, necaz, judecată sau altă încercare a vieții.",
+    intro: "Viața aduce momente de cumpănă în care avem nevoie de sprijin divin. Rugăciunile pentru ocazii speciale însoțesc credinciosul în fiecare moment important al vieții.",
+    icon: "✨",
+  },
+};
+
+const { categorie } = Astro.params;
+if (!categorie || !CATEGORIES[categorie]) return Astro.redirect("/rugaciuni", 302);
+
+const cat = CATEGORIES[categorie]!;
+const siteUrl = "https://rugaciunisanatate.ro";
+const pageUrl = `${siteUrl}/rugaciuni/${categorie}`;
+
+const url = Astro.url;
+const page = Math.max(1, parseInt(url.searchParams.get("page") ?? "1"));
+const sort = url.searchParams.get("sort") ?? "recent";
+const PER_PAGE = 24;
+
+const orderBy: Record<string, "asc" | "desc"> =
+  sort === "alpha" ? { title: "asc" } : { published_at: "desc" };
+
+const { entries: allInCategory } = await getEmDashCollection("rugaciuni", {
+  where: { status: "published", category: categorie },
+  orderBy,
+});
+
+const total = allInCategory.length;
+const totalPages = Math.ceil(total / PER_PAGE);
+const prayers = allInCategory.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
+const otherCategories = Object.entries(CATEGORIES).filter(([slug]) => slug !== categorie);
+
+const schema = [
+  {
+    "@type": "CollectionPage",
+    "@id": `${pageUrl}#page`,
+    url: pageUrl,
+    name: cat.title,
+    description: cat.description,
+    inLanguage: "ro-RO",
+    isPartOf: { "@id": `${siteUrl}/#website` },
+    about: { "@type": "Thing", name: cat.name },
+  },
+  {
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Acasă", item: siteUrl },
+      { "@type": "ListItem", position: 2, name: "Rugăciuni", item: `${siteUrl}/rugaciuni` },
+      { "@type": "ListItem", position: 3, name: cat.name, item: pageUrl },
+    ],
+  },
+];
+---
+
+<Base
+  title={cat.title}
+  description={cat.description}
+  canonical={pageUrl}
+  schema={schema}
+  activeNav="rugaciuni"
+>
+  <div class="catalog-hero">
+    <div class="catalog-hero-inner">
+      <div class="catalog-hero-label">✦ {cat.icon} ✦</div>
+      <h1 class="catalog-hero-title">Rugăciuni de <em>{cat.name.toLowerCase()}</em></h1>
+      <p style="color:rgba(251,248,242,0.65);font-size:0.95rem;max-width:560px;margin:0 auto;line-height:1.7">
+        {cat.intro}
+      </p>
+    </div>
+  </div>
+
+  <Breadcrumb
+    crumbs={[
+      { label: "Rugăciuni", href: "/rugaciuni" },
+      { label: cat.name },
+    ]}
+  />
+
+  <div class="catalog-body">
+    <!-- Sidebar -->
+    <aside class="filters-sidebar">
+      <div class="filter-card">
+        <div class="filter-title">Alte categorii</div>
+        <div class="filter-list">
+          <a href="/rugaciuni" class="filter-item">
+            <span class="filter-name">✦ Toate rugăciunile</span>
+          </a>
+          {otherCategories.map(([slug, c]) => (
+            <a href={`/rugaciuni/${slug}`} class="filter-item">
+              <span class="filter-name">{c.icon} {c.name}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <div class="filter-card">
+        <div class="filter-title">Sortare</div>
+        <div class="filter-list">
+          <a
+            href={`/rugaciuni/${categorie}`}
+            class:list={["filter-item", sort !== "alpha" && "active"]}
+          >
+            <span class="filter-name">Recente</span>
+          </a>
+          <a
+            href={`/rugaciuni/${categorie}?sort=alpha`}
+            class:list={["filter-item", sort === "alpha" && "active"]}
+          >
+            <span class="filter-name">Alfabetic</span>
+          </a>
+        </div>
+      </div>
+
+      <AdSense slot="5678901234" format="rectangle" class="ad-banner rect" />
+    </aside>
+
+    <!-- Main content -->
+    <main>
+      <div class="results-header">
+        <div class="results-count">
+          <strong>{total}</strong> rugăciuni în categoria <em>{cat.name}</em>
+        </div>
+      </div>
+
+      {prayers.length > 0 ? (
+        <div class="prayers-grid">
+          {prayers.map((p) => (
+            <PrayerCard
+              title={ptToText(p.data.title)}
+              slug={p.data.slug ?? p.id}
+              excerpt={ptToText(p.data.excerpt)}
+              category={ptToText(p.data.category)}
+              readingTime={p.data.reading_time}
+              hasAudio={!!ptToText(p.data.audio_url)}
+              publishedAt={p.data.published_at}
+            />
+          ))}
+        </div>
+      ) : (
+        <div style="text-align:center;padding:80px 20px;color:var(--text-light)">
+          <div style="font-size:3rem;margin-bottom:16px">{cat.icon}</div>
+          <p>Rugăciunile din această categorie sunt în curs de adăugare.</p>
+          <a href="/rugaciuni" class="btn-primary" style="margin-top:20px;display:inline-flex">
+            Toate rugăciunile
+          </a>
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <nav class="pagination" aria-label="Paginare">
+          {page > 1 && (
+            <a href={`/rugaciuni/${categorie}?page=${page - 1}${sort !== "recent" ? `&sort=${sort}` : ""}`}>‹</a>
+          )}
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+            p === page
+              ? <span>{p}</span>
+              : <a href={`/rugaciuni/${categorie}?page=${p}${sort !== "recent" ? `&sort=${sort}` : ""}`}>{p}</a>
+          ))}
+          {page < totalPages && (
+            <a href={`/rugaciuni/${categorie}?page=${page + 1}${sort !== "recent" ? `&sort=${sort}` : ""}`}>›</a>
+          )}
+        </nav>
+      )}
+    </main>
+  </div>
+</Base>

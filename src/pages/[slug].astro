@@ -238,7 +238,7 @@ const initials = author?.name
             ["familie", "Familie"],
             ["ocazii", "Ocazii speciale"],
           ].map(([slug, label]) => (
-            <li><a href={`/rugaciuni?cat=${slug}`}>{label}</a></li>
+            <li><a href={`/rugaciuni/${slug}`}>{label}</a></li>
           ))}
         </ul>
       </div>

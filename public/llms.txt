@@ -21,12 +21,12 @@
 
 ## Categorii de rugăciuni
 
-- **Vindecare**: https://rugaciunisanatate.ro/rugaciuni?cat=vindecare — rugăciuni pentru sănătate și tămăduire trupească
-- **Dimineață**: https://rugaciunisanatate.ro/rugaciuni?cat=dimineata — rugăciuni de dimineață din tradiția ortodoxă
-- **Seară**: https://rugaciunisanatate.ro/rugaciuni?cat=seara — rugăciuni de seară și înainte de culcare
-- **Psalmi**: https://rugaciunisanatate.ro/rugaciuni?cat=psalmi — psalmi terapeutici și de apărare
-- **Familie**: https://rugaciunisanatate.ro/rugaciuni?cat=familie — rugăciuni pentru soț, soție, copii, părinți
-- **Ocazii speciale**: https://rugaciunisanatate.ro/rugaciuni?cat=ocazii — înainte de operație, examen, călătorie, necaz
+- **Vindecare**: https://rugaciunisanatate.ro/rugaciuni/vindecare — rugăciuni pentru sănătate și tămăduire trupească
+- **Dimineață**: https://rugaciunisanatate.ro/rugaciuni/dimineata — rugăciuni de dimineață din tradiția ortodoxă
+- **Seară**: https://rugaciunisanatate.ro/rugaciuni/seara — rugăciuni de seară și înainte de culcare
+- **Psalmi**: https://rugaciunisanatate.ro/rugaciuni/psalmi — psalmi terapeutici și de apărare
+- **Familie**: https://rugaciunisanatate.ro/rugaciuni/familie — rugăciuni pentru soț, soție, copii, părinți
+- **Ocazii speciale**: https://rugaciunisanatate.ro/rugaciuni/ocazii — înainte de operație, examen, călătorie, necaz
 
 ## Sfinți tămăduitori
 
