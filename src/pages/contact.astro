@@ -11,6 +11,7 @@ const schema = [
     name: "Contact — Rugăciuni Sănătate",
     inLanguage: "ro-RO",
     isPartOf: { "@id": `${siteUrl}/#website` },
+    about: { "@id": `${siteUrl}/#organization` },
   },
   {
     "@type": "BreadcrumbList",
@@ -24,7 +25,7 @@ const schema = [
 
 <Base
   title="Contact — Rugăciuni Sănătate"
-  description="Contactează echipa Rugăciuni Sănătate pentru întrebări, sugestii sau colaborări."
+  description="Contactează echipa Rugăciuni Sănătate pentru sugestii de rugăciuni, corecții sau propuneri de colaborare."
   canonical={`${siteUrl}/contact`}
   schema={schema}
 >
@@ -34,78 +35,207 @@ const schema = [
     <div class="ornament" style="margin-bottom:24px">Contact</div>
     <h1>Ia legătura cu noi</h1>
     <p>
-      Ne bucurăm să auzim de la voi — fie că aveți o sugestie de rugăciune, o corecție
-      sau doriți să colaborați. Răspundem în cel mult 48 de ore.
+      Ne bucurăm să auzim de la dvs. — fie că aveți o sugestie de rugăciune, o corecție
+      de text sau doriți să colaborați. Răspundem în cel mult 48 de ore.
     </p>
 
-    <form
-      class="contact-form"
-      action="/_emdash/api/contact"
-      method="post"
-      onsubmit="handleSubmit(event)"
-    >
-      <div class="form-group">
-        <label for="name">Numele dvs. *</label>
-        <input type="text" id="name" name="name" required placeholder="Ion Popescu" />
+    <div class="contact-grid">
+      <!-- Contact info -->
+      <div class="contact-info-card">
+        <div class="contact-info-item">
+          <span class="contact-info-icon">✉</span>
+          <div>
+            <div class="contact-info-label">Email direct</div>
+            <a href="mailto:contact@rugaciunisanatate.ro" class="contact-info-value">
+              contact@rugaciunisanatate.ro
+            </a>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <span class="contact-info-icon">⏱</span>
+          <div>
+            <div class="contact-info-label">Timp de răspuns</div>
+            <div class="contact-info-value">Maxim 48 de ore</div>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <span class="contact-info-icon">✦</span>
+          <div>
+            <div class="contact-info-label">Colaborări</div>
+            <div class="contact-info-value" style="font-size:0.85rem;line-height:1.5">
+              Preoți, teologi și autori cu formare ortodoxă sunt bineveniți să contribuie cu rugăciuni sau articole.
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="form-group">
-        <label for="email">Adresa de email *</label>
-        <input type="email" id="email" name="email" required placeholder="ion@example.ro" />
-      </div>
-      <div class="form-group">
-        <label for="subject">Subiect *</label>
-        <select id="subject" name="subject" required>
-          <option value="">Alege un subiect</option>
-          <option value="sugestie">Sugestie rugăciune</option>
-          <option value="corectie">Corecție / eroare</option>
-          <option value="colaborare">Colaborare</option>
-          <option value="altele">Altele</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="message">Mesaj *</label>
-        <textarea id="message" name="message" required placeholder="Mesajul dvs..."></textarea>
-      </div>
-      <button type="submit" class="btn-primary" id="submitBtn">
-        Trimite mesajul
-      </button>
-      <div id="formMsg" style="display:none;padding:12px 16px;border-radius:var(--radius);font-size:0.9rem"></div>
-    </form>
+
+      <!-- Form -->
+      <form
+        class="contact-form"
+        id="contactForm"
+        novalidate
+      >
+        <!-- Honeypot (hidden from humans, bots fill it) -->
+        <div style="position:absolute;left:-9999px;opacity:0;pointer-events:none" aria-hidden="true">
+          <label for="website">Nu completați acest câmp</label>
+          <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <div class="form-group">
+          <label for="name">Numele dvs. <span style="color:#c4973a">*</span></label>
+          <input type="text" id="name" name="name" required placeholder="Ion Popescu" autocomplete="name" />
+        </div>
+        <div class="form-group">
+          <label for="email">Adresa de email <span style="color:#c4973a">*</span></label>
+          <input type="email" id="email" name="email" required placeholder="ion@example.ro" autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label for="subject">Subiect <span style="color:#c4973a">*</span></label>
+          <select id="subject" name="subject" required>
+            <option value="">Alege un subiect</option>
+            <option value="sugestie">Sugestie rugăciune</option>
+            <option value="corectie">Corecție / eroare</option>
+            <option value="colaborare">Colaborare</option>
+            <option value="altele">Altele</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="message">Mesaj <span style="color:#c4973a">*</span></label>
+          <textarea id="message" name="message" required placeholder="Mesajul dvs..." maxlength="5000"></textarea>
+          <div style="font-size:0.75rem;color:var(--text-light);text-align:right">
+            <span id="charCount">0</span>/5000
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" id="submitBtn">
+          ✉ Trimite mesajul
+        </button>
+
+        <div id="formMsg" role="alert" aria-live="polite" style="display:none;padding:14px 18px;border-radius:var(--radius);font-size:0.9rem;line-height:1.5"></div>
+      </form>
+    </div>
+
+    <!-- Bottom note -->
+    <div style="margin-top:48px;padding:20px 24px;background:var(--parchment-dark);border:1px solid rgba(196,151,58,0.15);border-radius:var(--radius);font-size:0.85rem;color:var(--text-light);line-height:1.7">
+      <strong style="color:var(--text)">Notă:</strong> Rugăciunile publicate pe acest site provin din Ceaslov, Molitfelnic, Psaltire și tradiția vie a Bisericii Ortodoxe. Dacă observați o eroare liturgică sau doriți să sugerați o rugăciune autentică, vă rugăm să ne contactați.
+    </div>
   </div>
 </Base>
 
+<style>
+.contact-grid {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 32px;
+  margin-top: 32px;
+  align-items: start;
+}
+
+.contact-info-card {
+  background: var(--parchment-dark);
+  border: 1px solid rgba(196,151,58,0.2);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.contact-info-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.contact-info-icon {
+  font-size: 1.1rem;
+  color: var(--gold);
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.contact-info-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-light);
+  margin-bottom: 4px;
+}
+
+.contact-info-value {
+  font-size: 0.9rem;
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+a.contact-info-value:hover {
+  color: var(--gold);
+}
+
+@media (max-width: 680px) {
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+  .contact-info-card {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .contact-info-item {
+    flex: 1 1 200px;
+  }
+}
+</style>
+
 <script>
-  async function handleSubmit(e: SubmitEvent) {
+  const form = document.getElementById("contactForm") as HTMLFormElement;
+  const btn = document.getElementById("submitBtn") as HTMLButtonElement;
+  const msg = document.getElementById("formMsg")!;
+  const textarea = document.getElementById("message") as HTMLTextAreaElement;
+  const charCount = document.getElementById("charCount")!;
+
+  // Character counter
+  textarea.addEventListener("input", () => {
+    charCount.textContent = String(textarea.value.length);
+  });
+
+  function showMsg(text: string, ok: boolean) {
+    msg.style.display = "block";
+    msg.style.background = ok ? "rgba(34,197,94,0.08)" : "rgba(239,68,68,0.08)";
+    msg.style.border = ok ? "1px solid rgba(34,197,94,0.25)" : "1px solid rgba(239,68,68,0.25)";
+    msg.style.color = ok ? "#15803d" : "#dc2626";
+    msg.textContent = text;
+  }
+
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const form = e.target as HTMLFormElement;
-    const btn = document.getElementById("submitBtn") as HTMLButtonElement;
-    const msg = document.getElementById("formMsg")!;
+    msg.style.display = "none";
     btn.disabled = true;
     btn.textContent = "Se trimite...";
+
     try {
-      const res = await fetch(form.action, {
+      const res = await fetch("/api/contact", {
         method: "POST",
         body: new FormData(form),
       });
-      if (res.ok) {
-        msg.style.display = "block";
-        msg.style.background = "rgba(34,197,94,0.1)";
-        msg.style.border = "1px solid rgba(34,197,94,0.3)";
-        msg.style.color = "#15803d";
-        msg.textContent = "✓ Mesajul a fost trimis. Vă mulțumim!";
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok && data.ok) {
+        showMsg("✓ Mesajul a fost trimis cu succes. Vă vom răspunde în cel mult 48 de ore.", true);
         form.reset();
+        charCount.textContent = "0";
+        btn.textContent = "✉ Trimite mesajul";
       } else {
-        throw new Error();
+        throw new Error(data.error ?? "Eroare necunoscută");
       }
-    } catch {
-      msg.style.display = "block";
-      msg.style.background = "rgba(239,68,68,0.1)";
-      msg.style.border = "1px solid rgba(239,68,68,0.3)";
-      msg.style.color = "#dc2626";
-      msg.textContent = "A apărut o eroare. Vă rugăm să încercați din nou.";
+    } catch (err: any) {
+      showMsg(err.message || "A apărut o eroare. Vă rugăm să încercați din nou sau scrieți direct la contact@rugaciunisanatate.ro.", false);
       btn.disabled = false;
-      btn.textContent = "Trimite mesajul";
+      btn.textContent = "✉ Trimite mesajul";
     }
-  }
-  (window as any).handleSubmit = handleSubmit;
+  });
 </script>
