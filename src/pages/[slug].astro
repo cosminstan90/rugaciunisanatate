@@ -20,10 +20,8 @@ const slug = decodeSlug(rawSlug);
 
 if (!slug) return Astro.redirect("/404");
 
-const { entry: prayer, cacheHint } = await getEmDashEntry("rugaciuni", slug);
+const { entry: prayer } = await getEmDashEntry("rugaciuni", slug);
 if (!prayer) return Astro.redirect("/404");
-
-Astro.cache.set(cacheHint);
 
 const siteUrl = "https://rugaciunisanatate.ro";
 const pageUrl = `${siteUrl}/${slug}`;

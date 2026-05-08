@@ -11,10 +11,9 @@ import { ptToText } from "../../lib/ptToText";
 const slug = decodeSlug(Astro.params.slug);
 if (!slug) return Astro.redirect("/404");
 
-const { entry: saint, cacheHint } = await getEmDashEntry("sfinti", slug);
+const { entry: saint } = await getEmDashEntry("sfinti", slug);
 if (!saint) return Astro.redirect("/404");
 
-Astro.cache.set(cacheHint);
 
 const siteUrl = "https://rugaciunisanatate.ro";
 const pageUrl = `${siteUrl}/sfinti/${slug}`;

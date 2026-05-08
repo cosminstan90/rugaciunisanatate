@@ -11,10 +11,9 @@ import { ptToText } from "../../lib/ptToText";
 const slug = decodeSlug(Astro.params.slug);
 if (!slug) return Astro.redirect("/404");
 
-const { entry: article, cacheHint } = await getEmDashEntry("articole", slug);
+const { entry: article } = await getEmDashEntry("articole", slug);
 if (!article) return Astro.redirect("/404");
 
-Astro.cache.set(cacheHint);
 
 const siteUrl = "https://rugaciunisanatate.ro";
 const pageUrl = `${siteUrl}/articole/${slug}`;
