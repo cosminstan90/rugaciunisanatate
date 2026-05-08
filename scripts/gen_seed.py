@@ -1,0 +1,188 @@
+import json, sys
+
+def pt(texts):
+    blocks = []
+    for i, text in enumerate(texts):
+        blocks.append({
+            "_type": "block",
+            "_key": f"blk{i+1}",
+            "style": "normal",
+            "children": [{
+                "_type": "span",
+                "_key": f"spn{i+1}",
+                "text": text,
+                "marks": []
+            }]
+        })
+    return json.dumps(blocks, ensure_ascii=False)
+
+prayers = [
+  ("01KRTQ00000000000000000001","rugaciune-de-vindecare-trupeasca","Rugăciune de vindecare trupească",
+   "Rugăciune către Dumnezeu pentru vindecare trupească, rostită cu credință și nădejde de cei bolnavi.","vindecare",3,"2026-02-10",
+   ["Doamne Iisuse Hristoase, Doctorul sufletelor și al trupurilor noastre, caută cu milostivire spre robul Tău care zace în suferință. Tu, Cel ce ai vindecat pe cei zece leproși, pe orbul din naștere și pe slăbănogul de la scăldătoarea Siloamului, ridică și pe cel ce se roagă Ție cu credință și cu lacrimi.",
+    "Trimite, Doamne, puterea Ta cea vindecătoare asupra trupului meu slăbit de boală. Alungă durerea, întărește mădularele, dă sănătate și putere, ca, ridicat din pat de suferință, să Îți mulțumesc și să Te slăvesc în toate zilele vieții mele.",
+    "Căci la Tine este toată nădejdea mea, Hristoase Doamne, și în mâinile Tale mă las cu totul. Facă-se voia Ta, acum și în vecii vecilor. Amin."]),
+  ("01KRTQ00000000000000000002","rugaciune-pentru-sanatate-si-tamaduire","Rugăciune pentru sănătate și tămăduire",
+   "Rugăciune scurtă și puternică pentru dobândirea sănătății, adresată Maicii Domnului și Sfântului Mare Mucenic Pantelimon.","vindecare",2,"2026-02-15",
+   ["Preasfântă Născătoare de Dumnezeu, Vindecătoarea bolnavilor, și tu, Sfinte Mare Mucenice și Tămăduitorule Pantelimon, fiți mijlocitori înaintea Tronului lui Dumnezeu pentru mine, cel ce sufăr în trup și în duh.",
+    "Rugați pe Hristos Dumnezeu să trimită tămăduire bolii mele, să-mi întărească trupul și sufletul, să-mi dea răbdare în suferință și nădejde în vindecare. Fac făgăduință că, de mă voi ridica sănătos, voi trăi în mulțumire și în slujba aproapelui meu.",
+    "Amin."]),
+  ("01KRTQ00000000000000000003","rugaciune-pentru-cel-bolnav","Rugăciune pentru cel bolnav",
+   "Rugăciune de mijlocire pe care o rostim pentru un om drag bolnav, cerând lui Dumnezeu tămăduire grabnică.","vindecare",3,"2026-02-20",
+   ["Doamne, Dumnezeul nostru, Cel ce ești Izvorul vieții și al sănătății, caută cu îndurare spre robul Tău care zace în suferință. Tu știi durerea lui, Tu cunoști lacrimile celor dragi care se roagă pentru el.",
+    "Trimite-i, Doamne, harul Tău cel tămăduitor. Fie voia Ta cea sfântă: dacă este spre folosul sufletului lui, ridică-l din patul suferinței, întărește-i trupul și dă-i bucuria sănătății. Dacă însă altceva ai rânduit, dă-i răbdare și mângâiere, și primește-l în lumina feței Tale.",
+    "Noi nădăjduim în mila Ta cea nemărginită. Amin."]),
+  ("01KRTQ00000000000000000004","acatistul-sfantului-nectarie-vindecare","Rugăciune către Sfântul Nectarie pentru vindecare",
+   "Rugăciune adresată Sfântului Nectarie din Eghina, taumaturghul veacului nostru, pentru tămăduirea bolilor grele.","vindecare",3,"2026-02-25",
+   ["O, Sfinte Ierarhe Nectarie, taumaturghule al vremurilor noastre, cel ce ai primit de la Dumnezeu darul vindecărilor, nu trece cu vederea rugăciunea smerită a celui ce aleargă la tine cu credință.",
+    "Sfinte Nectarie, tu care ai vindecat pe cei bolnavi de cancer și boli fără de leac, roagă-te pentru mine înaintea lui Dumnezeu. Fie-ți milă de suferința mea și mijlocește grabnica mea vindecare, spre slava lui Dumnezeu Cel Atotputernic.",
+    "Prin rugăciunile tale, sfinte, să dobândesc sănătatea trupului și mântuirea sufletului. Amin."]),
+  ("01KRTQ00000000000000000005","rugaciune-inainte-de-operatie","Rugăciune înainte de operație",
+   "Rugăciune de pregătire sufletească înainte de o intervenție chirurgicală, pentru ca Dumnezeu să îndrumeze mâinile medicilor.","vindecare",3,"2026-03-01",
+   ["Doamne Iisuse Hristoase, în mâinile Tale îmi pun sufletul și trupul în aceste clipe de cumpănă. Tu ești Doctorul cel adevărat care a dat înțelepciune oamenilor să cunoască tainele trupului omenesc.",
+    "Binecuvântează, Doamne, mâinile medicilor și ale tuturor celor care mă vor îngriji. Dă-le pricepere, îndemânare și veghere. Acoperă-mă cu harul Tău în fiecare clipă a operației și scoate-mă cu bine, spre a Te slăvi în sănătate.",
+    "Nu mă lăsa, Doamne, și nu depărta mila Ta de la mine. Amin."]),
+  ("01KRTQ00000000000000000006","rugaciune-pentru-sanatatea-mintii","Rugăciune pentru sănătatea minții",
+   "Rugăciune pentru vindecare de depresie, anxietate și tulburări ale minții, cerând pacea lui Hristos.","vindecare",3,"2026-03-05",
+   ["Doamne Iisuse Hristoase, Pacea mea și Liniștea mea, mintea mea este tulburată și inima mea e cuprinsă de frică și de întuneric. Vino, Doamne, cu lumina Ta și alungă negura gândurilor rele.",
+    "Dă-mi, Doamne, pacea care întrece orice minte, acea pace pe care lumea nu o poate da. Vindecă rănile sufletului meu, liniștește furtuna dinlăuntrul meu și dă-mi puterea de a merge mai departe cu nădejde și bucurie.",
+    "Că Tu ești Doctorul și sufletelor noastre, și la Tine alerg cu toată nădejdea mea. Amin."]),
+  ("01KRTQ00000000000000000007","rugaciune-pentru-copil-bolnav","Rugăciune pentru copil bolnav",
+   "Rugăciune a părinților pentru vindecarea copilului bolnav, cu nădejde în mila lui Dumnezeu.","vindecare",3,"2026-03-10",
+   ["Doamne, Dumnezeul nostru, îți aduc cu lacrimi și cu durere copilul meu cel bolnav. El este darul Tău cel sfânt, și acum sufăr văzându-l în suferință. Tu ești Tatăl tuturor și cunoști durerea unui părinte.",
+    "Vindecă, Doamne, pe copilul meu. Trimite-i înger tămăduitor care să-l însoțească zi și noapte. Întărește-i trupul cel neputincios și redă-i bucuria copilăriei.",
+    "Maică a lui Dumnezeu, tu care ai simțit durerea pierderii, mijlocește pentru copilul nostru. Amin."]),
+  ("01KRTQ00000000000000000008","rugaciune-de-multumire-dupa-vindecare","Rugăciune de mulțumire după vindecare",
+   "Rugăciune de mulțumire adresată lui Dumnezeu după ce am primit darul vindecării, slăvindu-L pentru mila Sa.","vindecare",2,"2026-03-15",
+   ["Slavă Ție, Doamne, slavă Ție! Ai auzit rugăciunea mea și ai trimis vindecare trupului meu suferind. Mare este mila Ta și fără de margini îndurarea Ta față de noi, păcătoșii.",
+    "Îți mulțumesc, Doamne Iisuse Hristoase, pentru că nu m-ai lăsat în suferință, pentru că ai călăuzit mâinile doctorilor și ai pus în leacuri puterea Ta tămăduitoare. Îți mulțumesc pentru fiecare zi de sănătate pe care mi-o dăruiești.",
+    "Fă ca sănătatea redată să o folosesc în slujba Ta și a aproapelui. Amin."]),
+  ("01KRTQ00000000000000000009","rugaciune-de-dimineata-ortodoxa","Rugăciune de dimineață ortodoxă",
+   "Rugăciune de dimineață din Ceaslovul ortodox, pentru a începe ziua în prezența lui Dumnezeu cu mulțumire și nădejde.","dimineata",3,"2026-03-20",
+   ["Sculându-mă din somn, Îți aduc Ție, Treimea cea Sfântă, mulțumire pentru odihna de noaptea aceasta și pentru că m-ai păzit în cursul nopții. Luminează ochii minții mele și deschide gura mea spre laudă, ca să cânt și să Te slăvesc.",
+    "Doamne, îndreptează pașii mei în calea poruncilor Tale în ziua de astăzi. Ferește-mă de toată răutatea, de gândurile cele rele și de ispitele celui viclean. Dă-mi putere să împlinesc voia Ta cea sfântă și să fiu de folos celor din jurul meu.",
+    "Că a Ta este împărăția și puterea și slava, acum și pururea și în vecii vecilor. Amin."]),
+  ("01KRTQ00000000000000000010","rugaciune-dimineata-scurta","Rugăciune scurtă de dimineață",
+   "Rugăciune scurtă și simplă pentru dimineață, potrivită pentru zilele aglomerate când avem nevoie de câteva clipe cu Dumnezeu.","dimineata",2,"2026-03-25",
+   ["Doamne Iisuse Hristoase, Fiul lui Dumnezeu, miluiește-mă pe mine, păcătosul. Îți mulțumesc pentru noaptea de odihnă și pentru ziua nouă pe care mi-o dăruiești. Ți-o ofer Ție în întregime.",
+    "Binecuvântează ziua aceasta, Doamne. Fii Tu mai înainte pe calea mea, în fiecare gând, în fiecare cuvânt și în fiecare faptă. Nu mă lăsa să greșesc și ajută-mă să fiu un om mai bun astăzi decât ieri. Amin."]),
+  ("01KRTQ00000000000000000011","rugaciune-dimineata-pentru-zi-buna","Rugăciune de dimineață pentru o zi bună",
+   "Rugăciune pentru binecuvântarea zilei care urmează, cerând prezența lui Dumnezeu în toate activitățile noastre.","dimineata",2,"2026-03-30",
+   ["Doamne, Ziditorul meu, în zorii acestei zile alerg la Tine cu rugă fierbinte. Binecuvântează ziua ce se deschide înaintea mea. Fii Tu stăpânul gândurilor, al cuvintelor și al faptelor mele.",
+    "Dă-mi înțelepciune în decizii, răbdare în necazuri, bucurie în lucruri simple și recunoștință pentru darurile tale. Ferește-mă de accidente, de boli și de orice rău. Iar seara, adună-mă iarăși în brațele Tale cu sufletul curat.",
+    "Că Tu ești paza mea și ocrotirea mea în toată ziua. Amin."]),
+  ("01KRTQ00000000000000000012","rugaciunea-dimineata-catre-maica-domnului","Rugăciune de dimineață către Maica Domnului",
+   "Rugăciune dimineața adresată Maicii Domnului, cerând ocrotirea și mijlocirea ei pentru ziua ce urmează.","dimineata",2,"2026-04-03",
+   ["Preasfântă Stăpână, Născătoare de Dumnezeu, în dimineața aceasta alerg la tine cu inima plină de nădejde. Tu ești Maica noastră și știi că avem nevoie de ajutor în fiecare zi.",
+    "Mijlocește, Maică Preacurată, ca ziua aceasta să fie binecuvântată. Acoperă-mă cu omoforul tău cel sfânt. Ferește-mă de ispite și de primejdii. Roagă-te pentru mine la Fiul tău Hristos, Dumnezeul nostru, să-mi dăruiască sănătate, pace și mântuire.",
+    "Bucură-te, Maică a lui Dumnezeu! Amin."]),
+  ("01KRTQ00000000000000000013","rugaciunea-dimineata-sfantul-vasile","Rugăciunea de dimineață a Sfântului Vasile cel Mare",
+   "Rugăciune de dimineață din rânduiala Sfântului Vasile cel Mare, plină de profunzime teologică și caldă evlavie.","dimineata",3,"2026-04-07",
+   ["Doamne Dumnezeule, Cel ce ești fără de început și fără de sfârșit, Cel ce ai zidit cerurile și pământul, Luminătorul luminilor, deschide și inima mea și mintea mea spre primirea luminii Tale celei neapropiate.",
+    "Curățește-mă de toată întinăciunea trupului și a duhului. Dă-mi duh de pocăință și smerenie, duh de răbdare și blândețe, duh de iubire și al adevărului Tău. Fă-mă vrednic a Te sluji în această zi cu curăție, dreptate și frică dumnezeiască.",
+    "Ție mă rog și Ție mă închin, Tată, Fiu și Duh Sfânt. Amin."]),
+  ("01KRTQ00000000000000000014","rugaciune-de-seara-ortodoxa","Rugăciune de seară ortodoxă",
+   "Rugăciune de seară din tradiția ortodoxă, pentru a încheia ziua cu mulțumire și a intra în odihna nopții sub paza lui Dumnezeu.","seara",3,"2026-04-10",
+   ["Doamne Dumnezeul nostru, dacă am greșit în această zi cu cuvântul, cu fapta sau cu gândul, iartă-ne ca un Bun și de oameni iubitor. Dă-ne somn liniștit și odihnă de trupuri, și ne ferește pe noi de toată visarea și întunecarea diavolului.",
+    "Îți mulțumesc, Doamne, pentru ziua care a trecut, cu toate binefacerile ei. Îți cer iertare pentru greșelile săvârșite cu știință sau cu neștiință. Primește această rugăciune de seară ca pe o tămâie înaintea feței Tale.",
+    "Că Tu ești Sfânt și pururea Te lăudăm, Tatăl, Fiul și Sfântul Duh, acum și pururea și în vecii vecilor. Amin."]),
+  ("01KRTQ00000000000000000015","rugaciune-seara-scurta","Rugăciune scurtă de seară",
+   "Rugăciune scurtă de seară pentru persoanele ocupate, ca să nu adormim fără să mulțumim lui Dumnezeu.","seara",2,"2026-04-13",
+   ["Doamne Iisuse Hristoase, Fiul lui Dumnezeu, miluiește-mă pe mine, păcătosul. Îți mulțumesc pentru ziua de astăzi. Iartă-mă pentru greșelile mele și acoperă-mă cu mila Ta în această noapte.",
+    "Trimite îngerul Tău cel sfânt să mă păzească în somn. Fă ca dimineața să mă trezesc sănătos și gata să Te slujesc cu bucurie. Amin."]),
+  ("01KRTQ00000000000000000016","rugaciune-seara-pentru-familie","Rugăciune de seară pentru familie",
+   "Rugăciune de seară rostită împreună cu familia, cerând paza lui Dumnezeu asupra casei și a celor dragi.","seara",2,"2026-04-16",
+   ["Doamne, Dumnezeul nostru, la sfârșitul acestei zile ne adunăm împreună ca familie și Îți mulțumim pentru tot ce am trăit. Mulțumim pentru sănătate, pentru pâinea de pe masă, pentru dragostea care ne unește.",
+    "Ocrotește, Doamne, casa noastră în această noapte. Fii Tu strajă la ușa noastră. Ferește-ne pe toți de orice rău, de boli și de primejdii. Dă-ne somn bun și odihnitor și trezire cu bucurie dimineața.",
+    "Că sub acoperământul Tău ne adăpostim, Doamne, acum și pururea. Amin."]),
+  ("01KRTQ00000000000000000017","rugaciunea-seara-cu-multumire","Rugăciune de seară cu mulțumire",
+   "Rugăciune de mulțumire la sfârșitul zilei, recunoscând binefacerile lui Dumnezeu în cele mici și mari.","seara",2,"2026-04-19",
+   ["Slavă Ție, Doamne, slavă Ție! Îți mulțumesc pentru această zi pe care mi-ai dăruit-o. Îți mulțumesc pentru sănătate, pentru cei dragi, pentru hrana zilnică și pentru toate binefacerile văzute și nevăzute pe care mi le-ai dat.",
+    "Iartă-mi, Doamne, greșelile zilei de astăzi: gândurile rele, cuvintele fără rost, faptele în care Te-am întristat. Curățește-mă prin mila Ta și fă-mă mai bun în ziua de mâine. Odihna acestei nopți să fie sub paza îngerului Tău. Amin."]),
+  ("01KRTQ00000000000000000018","rugaciune-inainte-de-culcare-copii","Rugăciune înainte de culcare pentru copii",
+   "Rugăciune simplă și duioasă pe care o rostesc copiii înainte de somn, mulțumind lui Dumnezeu pentru ziua lor.","seara",2,"2026-04-22",
+   ["Doamne Iisuse Hristoase, bun și blând, îți mulțumesc pentru ziua de astăzi. Ai fost cu mine la școală și în joacă și m-ai păzit de orice rău.",
+    "Te rog, păzește-mă și în această noapte. Trimite-mi îngerul meu păzitor să stea lângă patul meu. Binecuvântează pe mama, pe tata și pe toți cei dragi mie. Amin."]),
+  ("01KRTQ00000000000000000019","psalmul-22-domnul-este-pastorul-meu","Psalmul 22 — Domnul este Păstorul meu",
+   "Cel mai iubit psalm al lui David, cântat în momente de liniște sau de primejdie, mărturisind că Dumnezeu este păstorul și ocrotitorul nostru.","psalmi",4,"2026-04-25",
+   ["Psalmul 22 este cel mai iubit psalm al lui David, exprimând încrederea deplină în Dumnezeu ca Păstor al vieții noastre. El aduce mângâiere în suferință și pace în mijlocul furtunilor vieții.",
+    "Psalmul începe cu mărturisirea: Domnul este Păstorul meu, nu voi duce lipsă de nimic. Cuvintele lui David ne însoțesc în fiecare moment dificil al vieții, amintindu-ne că Dumnezeu merge înaintea noastră pe toate cărările.",
+    "Citiți psalmul cu evlavie, ca o rugăciune de nădejde și mulțumire, știind că Dumnezeu este cu noi în toate împrejurările vieții."]),
+  ("01KRTQ00000000000000000020","psalmul-50-miluieste-ma-dumnezeule","Psalmul 50 — Miluiește-mă, Dumnezeule",
+   "Psalmul pocăinței, compus de David după căderea sa în păcat. Cel mai citit psalm în rânduielile de rugăciune ortodoxe.","psalmi",4,"2026-04-28",
+   ["Psalmul 50 este psalmul pocăinței prin excelență, rostit zilnic în rânduiala Utreniei ortodoxe. El exprimă durerea pentru păcate, cererea de iertare și nădejdea în mila lui Dumnezeu.",
+    "Cuvintele lui David — Miluiește-mă, Dumnezeule, după mare mila Ta — sunt și cuvintele noastre, ale tuturor celor ce simțim apăsarea greșelilor și căutăm iertare la Dumnezeu.",
+    "Citiți Psalmul 50 cu smerenie, ca o mărturisire a neputinței noastre și a nădejdii în mila dumnezeiască."]),
+  ("01KRTQ00000000000000000021","psalmul-90-cel-ce-locuieste-in-ajutorul-celui-preainalt","Psalmul 90 — Cel ce locuiește în ajutorul Celui Preaînalt",
+   "Psalmul de apărare și ocrotire dumnezeiască, citit pentru protecție împotriva bolilor, duhurilor rele și primejdiilor nevăzute.","psalmi",4,"2026-05-01",
+   ["Psalmul 90 este unul dintre cei mai puternici psalmi de apărare din Scriptură. El vorbește despre ocrotirea divină pe care o primesc cei ce trăiesc în apropierea lui Dumnezeu.",
+    "Tradiția ortodoxă recomandă citirea acestui psalm în caz de boală, frică, tulburare și pentru apărarea casei de orice rău. El ne amintește că Dumnezeu este scutul și întărirea noastră.",
+    "Citiți-l cu credință și cu conștiința că Dumnezeu este scutul și întărirea noastră în orice împrejurare."]),
+  ("01KRTQ00000000000000000022","psalmul-102-binecuvinteaza-suflete-al-meu-pe-domnul","Psalmul 102 — Binecuvântează, suflete al meu, pe Domnul",
+   "Imn de laudă și mulțumire, în care David slăvește pe Dumnezeu pentru toate binefacerile Sale și pentru iubirea Sa veșnică.","psalmi",4,"2026-05-03",
+   ["Psalmul 102 este un imn de laudă și recunoștință, în care sufletul omenesc se înalță spre Dumnezeu cu mulțumire pentru toate binefacerile Sale: iertarea păcatelor, vindecarea bolilor, răscumpărarea din stricăciune.",
+    "David laudă pe Dumnezeu cu cuvintele: Binecuvântează, suflete al meu, pe Domnul — Cel ce vindecă toate bolile tale. Psalmul ne amintește că fiecare dar al sănătății și al vieții vine de la Dumnezeu.",
+    "Rostiți psalmul ca pe o rugăciune de mulțumire pentru binefacerile lui Dumnezeu în viața voastră."]),
+  ("01KRTQ00000000000000000023","rugaciune-pentru-familie-si-casa","Rugăciune pentru familie și casă",
+   "Rugăciune pentru unitatea, pacea și binecuvântarea familiei, cerând lui Dumnezeu să fie stăpânul casei noastre.","familie",3,"2026-05-05",
+   ["Doamne Iisuse Hristoase, Tu care ai sfințit familia de la Cana Galileii cu prezența Ta, binecuvântează și familia noastră. Fii Tu Stăpânul și Capul casei noastre.",
+    "Dăruiește-ne unire în dragoste, înțelegere în necazuri, răbdare în greșeli și iertare reciprocă. Ferește casa noastră de certuri, de duhul dezbinării și al mâniei. Dă-ne sănătate la toți: la soț, la soție, la copii și la părinți.",
+    "Să fie casa noastră o biserică mică, în care Tu să locuiești și să fii slăvit. Amin."]),
+  ("01KRTQ00000000000000000024","rugaciune-pentru-sot-sotie","Rugăciune pentru soț sau soție",
+   "Rugăciune a soțului pentru soție sau invers, cerând lui Dumnezeu sănătate, dragoste și binecuvântare pentru cel drag.","familie",3,"2026-05-06",
+   ["Doamne Dumnezeule, Cel ce ai unit inimile noastre în Taina Sfintei Cununii, îți aduc mulțumire pentru darul pe care mi l-ai dat în persoana celui cu care împart viața.",
+    "Binecuvântează-l, Doamne, cu sănătate trupească și sufletească. Dă-i bucurie în fiecare zi, întărește-l în momentele de slăbiciune și apără-l de orice rău. Fă ca dragostea noastră să crească în fiecare zi, hrănită de credință, de răbdare și de jertfă reciprocă.",
+    "Că Tu ești Cel ce unești și înnoiești iubirile noastre, Doamne. Amin."]),
+  ("01KRTQ00000000000000000025","rugaciune-pentru-copii","Rugăciune pentru copii",
+   "Rugăciunea părinților pentru copiii lor: pentru sănătate, protecție, succes la școală și creștere în credință.","familie",3,"2026-05-07",
+   ["Doamne Iisuse Hristoase, Cel ce ai spus: Lasati copiii sa vina la Mine — primește și rugăciunea mea pentru copiii mei, rodul dragostei noastre și darul Tău cel sfânt.",
+    "Ocrotește-i cu îngerul Tău în fiecare clipă. Dăruiește-le sănătate trupească, minte ascuțită, inimă bună și suflet evlavios. Ferește-i de orice ispită, de compania rea și de influențe dăunătoare. Dă-le succes la școală și împlinire în viață.",
+    "Mai presus de toate, fă-i, Doamne, oameni buni și creștini adevărați. Amin."]),
+  ("01KRTQ00000000000000000026","rugaciune-pentru-parinti-batrani","Rugăciune pentru părinți bătrâni",
+   "Rugăciunea copiilor pentru părinții în vârstă sau bolnavi, mulțumind lui Dumnezeu pentru ei și cerând sănătate și pace.","familie",3,"2026-05-07",
+   ["Doamne Dumnezeule, Cel ce ai poruncit cinstirea tatălui și a mamei, îți aduc mulțumire pentru părinții pe care mi i-ai dat. Ei m-au crescut, m-au iubit și s-au jertfit pentru mine în toți anii vieții lor.",
+    "Binecuvântează-i acum la bătrânețe cu sănătate și cu bucurie. Alinează durerile lor, dă-le răbdare și mângâiere în boală. Fii Tu lumina lor în amurgul vieții. Iar la sfârșit, primește-i cu milă în împărăția Ta cea veșnică.",
+    "Dă-mi și mie puterea să le fiu alături cu dragoste și cu răbdare. Amin."]),
+  ("01KRTQ00000000000000000027","rugaciune-pentru-pace-in-familie","Rugăciune pentru pace în familie",
+   "Rugăciune pentru reconciliere și pace în familie, cerând lui Dumnezeu să stingă conflictele și să întărească dragostea.","familie",3,"2026-05-07",
+   ["Doamne Iisuse Hristoase, Printul Pacii, în familia noastră s-au aprins focuri de ceartă și dezbinare. Vino cu pacea Ta și stinge văpaia mâniei și a orgoliului nostru.",
+    "Dă-ne duhul blândeții și al iertării. Ajută-ne să ne uităm unii pe alții cu ochi de iubire, nu de judecată. Învață-ne să ascultăm, nu numai să vorbim; să dăm, nu numai să cerem; să iertăm, nu numai să așteptăm iertare.",
+    "Restaurează pacea în casa noastră, Doamne, căci fără Tine nu putem nimic. Amin."]),
+  ("01KRTQ00000000000000000028","rugaciune-inainte-de-examen","Rugăciune înainte de examen",
+   "Rugăciune pentru elevi și studenți înainte de un examen important, cerând limpezime a minții și ajutor de la Dumnezeu.","ocazii",3,"2026-05-07",
+   ["Doamne Iisuse Hristoase, Înțelepciunea lui Dumnezeu, mă aflu în fața unui examen important și alerg la Tine cu rugăciune fierbinte. Tu ești Cel ce deschizi mintea și dai pricepere celor ce o cer cu smerință.",
+    "Luminează mintea mea și adu-mi aminte tot ce am învățat. Alungă teama și emoțiile care mă copleșesc. Dă-mi claritate în gândire, calm în inimă și curaj să răspund cu bine.",
+    "Doamne, nu rezultatele contează cel mai mult, ci că am făcut tot ce am putut. Îmi pun nădejdea în Tine. Amin."]),
+  ("01KRTQ00000000000000000029","rugaciune-la-drum","Rugăciune la drum — înainte de călătorie",
+   "Rugăciune înainte de a pleca la drum, cerând paza lui Dumnezeu și a îngerilor sfânți pe toată calea.","ocazii",2,"2026-05-07",
+   ["Doamne Iisuse Hristoase, Dumnezeul nostru, Tu care ai purtat pașii apostolilor Tăi pe toate cărările lumii, fii și Tu paza mea pe drumul pe care îl pornesc astăzi.",
+    "Trimite îngerul Tău cel sfânt să meargă înaintea mea, să înlăture primejdiile nevăzute și văzute. Ferește-mă de accidente, de oameni răi și de orice necaz pe drum. Îndreaptă pașii mei în siguranță și întoarce-mă cu sănătate la casa mea.",
+    "Că Ție îți încredințez calea mea și în mâinile Tale mă las cu totul. Amin."]),
+  ("01KRTQ00000000000000000030","rugaciune-in-vreme-de-necaz","Rugăciune în vreme de necaz",
+   "Rugăciune pentru momentele grele ale vieții, când suntem copleșiți de probleme și nu mai vedem ieșirea, dar ne încredem în Dumnezeu.","ocazii",3,"2026-05-08",
+   ["Doamne Dumnezeul meu, vine la Tine un suflet necăjit și îndurerat. Viața mea este acum plină de griji și de întristare, și nu văd cale de ieșire. Dar la Tine vin, pentru că știu că Tu ești Cel ce ridici pe cei căzuți și mângâi pe cei îndurerați.",
+    "Doamne, ia Tu povara aceasta de pe umerii mei, că este prea grea pentru mine singur. Dă-mi înțelepciune să găsesc calea cea bună, dă-mi putere să merg mai departe, dă-mi pace în inimă chiar și în mijlocul furtunii.",
+    "Știu că toate lucrează spre bine pentru cei ce Te iubesc. Mă încred în Tine, Doamne, și nu mă tem. Amin."]),
+]
+
+rows = []
+for p in prayers:
+    id_, slug, title, excerpt, cat, rt, date, texts = p
+    ts = f"{date} 10:00:00+00"
+    content_json = pt(texts)
+    title_sql = title.replace("'", "''")
+    excerpt_sql = excerpt.replace("'", "''")
+    content_sql = content_json.replace("'", "''")
+    row = f"('{id_}', '{slug}',\n 'published', 'ro',\n '{title_sql}',\n '{excerpt_sql}',\n '{cat}',\n '{content_sql}',\n {rt},\n '{ts}', '{ts}', '{ts}',\n '')"
+    rows.append(row)
+
+output = "-- Seed 30 rugăciuni — generat cu gen_seed.py (json.dumps, fără ghilimele ASCII în text)\n"
+output += "BEGIN;\n\n"
+output += "INSERT INTO ec_rugaciuni (id, slug, status, locale, title, excerpt, category, content, reading_time, published_at, created_at, updated_at, og_image)\nVALUES\n"
+output += ",\n\n".join(rows)
+output += ";\n\nCOMMIT;\n"
+
+with open("scripts/seed-rugaciuni.sql", "w", encoding="utf-8") as f:
+    f.write(output)
+
+print(f"OK — {len(prayers)} rugaciuni, {len(output)} bytes")
