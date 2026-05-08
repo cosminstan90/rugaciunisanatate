@@ -631,7 +631,11 @@ aside { display: flex; flex-direction: column; gap: 24px; }
   background: linear-gradient(135deg, var(--dark-mid), rgba(196,151,58,0.2));
   border: 2px solid rgba(196,151,58,0.4);
   display: flex; align-items: center; justify-content: center;
-  font-size: 3.5rem; position: relative;
+  font-size: 3.5rem; position: relative; overflow: hidden;
+}
+.saint-icon-img {
+  width: 140px; height: 140px; border-radius: 50%;
+  object-fit: cover; object-position: top center; display: block;
 }
 .saint-hero-info { flex: 1; }
 .saint-type-badge {

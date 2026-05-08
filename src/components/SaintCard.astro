@@ -5,13 +5,30 @@ interface Props {
   type?: string;
   feastDate?: string;
   icon?: string;
+  photoUrl?: string;
 }
-const { name, slug, type, feastDate, icon = "✝️" } = Astro.props;
+const { name, slug, type, feastDate, icon = "✝️", photoUrl } = Astro.props;
 ---
 
 <a href={`/sfinti/${slug}`} class="saint-card">
-  <div class="saint-card-icon">{icon}</div>
+  <div class="saint-card-icon">
+    {photoUrl
+      ? <img src={photoUrl} alt={name} class="saint-card-img" width="80" height="80" loading="lazy" />
+      : <span>{icon}</span>
+    }
+  </div>
   {type && <div class="saint-card-type">{type}</div>}
   <div class="saint-card-name">{name}</div>
-  {feastDate && <div class="saint-card-feast">Praznuit: {feastDate}</div>}
+  {feastDate && <div class="saint-card-feast">✦ {feastDate}</div>}
 </a>
+
+<style>
+.saint-card-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+</style>

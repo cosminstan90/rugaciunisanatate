@@ -38,6 +38,7 @@ const schema = [
     description: seo.description,
     url: pageUrl,
     ...(saintFeastDate && { birthDate: saintFeastDate }),
+    ...(saint.data.photo_url && { image: `${siteUrl}${saint.data.photo_url}` }),
     additionalType: "https://schema.org/Person",
   },
   {
@@ -70,7 +71,17 @@ const todayFeasting = saintFeastDate
   <div class="saint-hero">
     <div class="saint-hero-inner">
       <div class="saint-icon-frame">
-        {saint.data.icon ?? "✝️"}
+        {saint.data.photo_url
+          ? <img
+              src={saint.data.photo_url}
+              alt={saintName}
+              width="140"
+              height="140"
+              class="saint-icon-img"
+              loading="eager"
+            />
+          : <span>{saint.data.icon ?? "✝️"}</span>
+        }
       </div>
       <div class="saint-hero-info">
         {ptToText(saint.data.saint_type) && (
