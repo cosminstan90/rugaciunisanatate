@@ -120,8 +120,7 @@ for a in articles:
         f" '{sql_str(category)}',\n"
         f" '{sql_str(content_json)}',\n"
         f" {rt},\n"
-        f" '{ts}', '{ts}', '{ts}',\n"
-        f" '')"
+        f" '{ts}', '{ts}', '{ts}')"
     )
     rows.append(row)
 
@@ -129,7 +128,7 @@ output = "-- Seed 6 articole — generat cu gen_articole.py\n"
 output += "BEGIN;\n\n"
 output += (
     "INSERT INTO ec_articole "
-    "(id, slug, status, locale, title, excerpt, category, content, reading_time, published_at, created_at, updated_at, og_image)\n"
+    "(id, slug, status, locale, title, excerpt, category, content, reading_time, published_at, created_at, updated_at)\n"
     "VALUES\n"
 )
 output += ",\n\n".join(rows)
