@@ -95,6 +95,18 @@ const schema = [
     about: { "@type": "Thing", name: cat.name },
   },
   {
+    "@type": "ItemList",
+    "@id": `${pageUrl}#list`,
+    name: cat.title,
+    numberOfItems: total,
+    itemListElement: prayers.slice(0, 10).map((p, i) => ({
+      "@type": "ListItem",
+      position: (page - 1) * PER_PAGE + i + 1,
+      url: `${siteUrl}/${p.data.slug ?? p.id}`,
+      name: ptToText(p.data.title),
+    })),
+  },
+  {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Acasă", item: siteUrl },

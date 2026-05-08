@@ -12,6 +12,7 @@ const STATIC_PAGES = [
   { url: "/rugaciuni/psalmi", priority: "0.8", changefreq: "weekly" },
   { url: "/rugaciuni/familie", priority: "0.8", changefreq: "weekly" },
   { url: "/rugaciuni/ocazii", priority: "0.75", changefreq: "weekly" },
+  { url: "/rugaciunea-zilei", priority: "0.75", changefreq: "daily" },
   { url: "/sfinti", priority: "0.8", changefreq: "weekly" },
   { url: "/articole", priority: "0.8", changefreq: "daily" },
   { url: "/calendar", priority: "0.7", changefreq: "daily" },
