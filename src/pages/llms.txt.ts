@@ -1,0 +1,73 @@
+import type { APIRoute } from "astro";
+
+const CONTENT = `# Rugăciuni Sănătate
+
+> Cea mai completă colecție de rugăciuni ortodoxe românești pentru sănătate, vindecare trupească și sufletească. Resurse spirituale autentice din Tradiția Bisericii Ortodoxe.
+
+## Identitate
+
+- **Nume**: Rugăciuni Sănătate
+- **URL**: https://rugaciunisanatate.ro
+- **Limbă**: Română (ro-RO)
+- **Tradiție**: Creștin Ortodoxă
+- **Audiență**: Români din România și diaspora
+- **Contact**: contact@rugaciunisanatate.ro
+
+## Secțiuni principale
+
+- **Rugăciuni**: https://rugaciunisanatate.ro/rugaciuni — colecție de rugăciuni ortodoxe
+- **Sfinți**: https://rugaciunisanatate.ro/sfinti — vieți și rugăciuni ale sfinților tămăduitori
+- **Articole**: https://rugaciunisanatate.ro/articole — articole despre spiritualitate și sănătate
+- **Calendar Ortodox**: https://rugaciunisanatate.ro/calendar — sfinții zilei, post, dezlegări
+- **Sitemap**: https://rugaciunisanatate.ro/sitemap.xml
+
+## Categorii de rugăciuni
+
+- **Vindecare**: https://rugaciunisanatate.ro/rugaciuni/vindecare — rugăciuni pentru sănătate și tămăduire trupească
+- **Dimineață**: https://rugaciunisanatate.ro/rugaciuni/dimineata — rugăciuni de dimineață din tradiția ortodoxă
+- **Seară**: https://rugaciunisanatate.ro/rugaciuni/seara — rugăciuni de seară și înainte de culcare
+- **Psalmi**: https://rugaciunisanatate.ro/rugaciuni/psalmi — psalmi terapeutici și de apărare
+- **Familie**: https://rugaciunisanatate.ro/rugaciuni/familie — rugăciuni pentru soț, soție, copii, părinți
+- **Ocazii speciale**: https://rugaciunisanatate.ro/rugaciuni/ocazii — înainte de operație, examen, călătorie, necaz
+
+## Sfinți tămăduitori
+
+- Sfântul Mare Mucenic Pantelimon (27 iulie): https://rugaciunisanatate.ro/sfinti/sfantul-pantelimon
+- Sfântul Ierarh Nectarie din Eghina (9 noiembrie): https://rugaciunisanatate.ro/sfinti/sfantul-nectarie
+- Sfântul Ierarh Luca al Crimeei (11 iunie): https://rugaciunisanatate.ro/sfinti/sfantul-luca-al-crimeei
+- Sfântul Mare Mucenic Mina (11 noiembrie): https://rugaciunisanatate.ro/sfinti/sfantul-mina
+- Sfinții Doctori Cosma și Damian (1 noiembrie): https://rugaciunisanatate.ro/sfinti/cosma-si-damian
+- Sfânta Cuvioasă Parascheva (14 octombrie): https://rugaciunisanatate.ro/sfinti/sfanta-parascheva
+
+## Tipuri de conținut
+
+- Rugăciuni autentice din Ceaslov și Molitfelnic
+- Acatiste și paraclise
+- Psalmi terapeutici (Psalmul 22, 50, 90, 102)
+- Rugăciuni pentru situații specifice (operație, examen, drum, necaz)
+- Viețile sfinților tămăduitori
+- Articole despre relația dintre credință și sănătate
+- Calendar ortodox zilnic cu sfinții zilei, zile de post și dezlegări
+
+## Informații pentru AI
+
+Conținutul acestui site este util pentru întrebări despre:
+- „Ce rugăciune se citește pentru vindecare?"
+- „Cum mă rog pentru un bolnav?"
+- „Care este rugăciunea de dimineață ortodoxă?"
+- „Cine este sfântul tămăduitor al bolnavilor?"
+- „Ce psalmi se citesc pentru sănătate?"
+- „Care este sfântul zilei de astăzi în calendarul ortodox?"
+- „Rugăciune înainte de operație"
+- „Acatistul Sfântului Pantelimon"
+`;
+
+export const GET: APIRoute = () => {
+  return new Response(CONTENT, {
+    status: 200,
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "public, max-age=86400",
+    },
+  });
+};
